@@ -17,6 +17,8 @@ import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import { useTextToSpeech } from "@/hooks/use-text-to-speech";
 import { useStreamingTranslation } from "@/hooks/use-streaming-translation";
 import { useTranslationHistory } from "@/hooks/use-translation-history";
+import { Button } from "@/components/ui/button";
+import { BookOpen } from "lucide-react";
 
 interface OutputLanguage {
   code: string;
@@ -435,7 +437,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
       addEntry({
         inputText: inputText.trim(),
         inputLanguage,
-        detectedLanguage,
+        detectedLanguage: detectedLanguage || undefined,
         translations,
       });
     }
@@ -466,6 +468,15 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
               <div className="flex self-end gap-2">
                 <HistoryDialog />
                 <SettingsDialog />
+                <Button
+                  onClick={() => window.open("/dictionary", "_blank")}
+                  variant="outline"
+                  size="sm"
+                  className="bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02]"
+                >
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Dictionary
+                </Button>
               </div>
 
               <LanguageSwapSection

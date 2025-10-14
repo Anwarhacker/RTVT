@@ -654,6 +654,15 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
               <div className="flex items-center gap-2">
                 <HistoryDialog />
                 <SettingsDialog />
+                <Button
+                  onClick={() => window.open("/dictionary", "_blank")}
+                  variant="outline"
+                  size="sm"
+                  className="bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02]"
+                >
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Dictionary
+                </Button>
               </div>
 
               {/* Language Swap Section */}
@@ -995,8 +1004,8 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                 <div className="space-y-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-secondary/10 rounded-lg">
-                        <Languages className="h-5 w-5 text-secondary" />
+                      <div className="p-2 rounded-lg">
+                        <Languages className="h-5 w-5 text-black " />
                       </div>
                       <h2 className="text-xl lg:text-2xl font-bold text-card-foreground">
                         Output

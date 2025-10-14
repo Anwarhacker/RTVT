@@ -58,9 +58,9 @@ export function OutputSection({
     <Card className="p-6 lg:p-8 border-2 border-border bg-card hover:border-primary/50 transition-all duration-300 rounded-2xl">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center gap-3">
             <div className="p-2 bg-secondary/10 rounded-lg">
-              <Languages className="h-5 w-5 text-secondary" />
+              <Languages className="h-5 w-5 text-black text-center" />
             </div>
             <h2 className="text-2xl lg:text-2xl font-bold text-card-foreground">
               Output
