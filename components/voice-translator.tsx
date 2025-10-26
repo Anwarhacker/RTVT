@@ -1127,7 +1127,13 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                               Copy
                             </Button>
                             <Button
-                              onClick={() => downloadAudio(output.text, output.code, `translation-${output.name}-${Date.now()}.webm`)}
+                              onClick={() =>
+                                downloadAudio(
+                                  output.text,
+                                  output.code,
+                                  `translation-${output.name}-${Date.now()}.wav`
+                                )
+                              }
                               variant="outline"
                               size="sm"
                               disabled={!output.text || !isTTSSupported}

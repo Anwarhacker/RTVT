@@ -211,89 +211,123 @@ export function useTextToSpeech(options: TextToSpeechOptions = {}): TextToSpeech
   }, [])
 
   const downloadAudio = useCallback(
-    (text: string, language?: string, filename?: string) => {
+    async (text: string, language?: string, filename?: string) => {
       if (!isSupported || !text.trim()) return
 
       try {
-        // Create a new utterance for recording
-        const utterance = new SpeechSynthesisUtterance(text)
-        
-        // Set voice and language
-        if (language && TTS_LANGUAGE_CODES[language]) {
-          const langCode = TTS_LANGUAGE_CODES[language]
-          const languageVoice = voices.find(
-            (voice) => voice.lang.startsWith(langCode) || voice.lang.startsWith(language)
-          )
-          if (languageVoice) {
-            utterance.voice = languageVoice
+        // Try to use server-side TTS API first
+        try {
+          const response = await fetch('/api/text-to-speech', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              text,
+              language: language || 'en',
+              voice: 'preferred-voice',
+              format: 'mp3'
+            })
+          })
+
+          if (response.ok) {
+            const audioBlob = await response.blob()
+            const url = URL.createObjectURL(audioBlob)
+
+            const a = document.createElement('a')
+            a.href = url
+            a.download = filename || `translation-${Date.now()}.mp3`
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+
+            URL.revokeObjectURL(url)
+            return
+          } else {
+            // API endpoint exists but not implemented
+            console.log('TTS API not implemented, using fallback')
           }
-          utterance.lang = langCode
+        } catch (apiError) {
+          console.log('TTS API not available, using fallback')
         }
 
-        // Set speech parameters
-        utterance.rate = speechRate
-        utterance.pitch = speechPitch
-        utterance.volume = speechVolume
+        // Fallback: create a notification sound when TTS API is unavailable
+        if (audioBufferToWav) {
+          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+          const sampleRate = audioContext.sampleRate
+          const duration = 0.5 // Short notification sound
+          const buffer = audioContext.createBuffer(1, sampleRate * duration, sampleRate)
+          const data = buffer.getChannelData(0)
 
-        // Create audio context for recording
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-        const mediaStreamDestination = audioContext.createMediaStreamDestination()
-        
-        // Create MediaRecorder
-        const mediaRecorder = new MediaRecorder(mediaStreamDestination.stream, {
-          mimeType: 'audio/webm'
-        })
-        
-        const audioChunks: Blob[] = []
-        
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            audioChunks.push(event.data)
+          // Create a simple notification beep
+          for (let i = 0; i < sampleRate * duration; i++) {
+            const t = i / sampleRate
+            data[i] = Math.sin(2 * Math.PI * 800 * t) * Math.exp(-t * 5) * 0.1
           }
-        }
-        
-        mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' })
+
+          const audioBlob = audioBufferToWav(buffer)
           const url = URL.createObjectURL(audioBlob)
-          
-          // Create download link
+
           const a = document.createElement('a')
           a.href = url
-          a.download = filename || `voice-translation-${Date.now()}.webm`
+          a.download = filename || `translation-${Date.now()}.wav`
           document.body.appendChild(a)
           a.click()
           document.body.removeChild(a)
-          
-          // Clean up
+
           URL.revokeObjectURL(url)
           audioContext.close()
         }
-        
-        // Start recording
-        mediaRecorder.start()
-        
-        // Speak and stop recording when done
-        utterance.onend = () => {
-          setTimeout(() => {
-            mediaRecorder.stop()
-          }, 500) // Small delay to ensure audio is captured
-        }
-        
-        utterance.onerror = () => {
-          mediaRecorder.stop()
-          audioContext.close()
-        }
-        
-        // Speak the text
-        window.speechSynthesis.speak(utterance)
-        
+
+        setError('TTS API unavailable - downloaded notification sound')
+
       } catch (error) {
         console.error('Audio download error:', error)
-        setError('Failed to download audio')
+        setError('Failed to download audio - implement server-side TTS API')
       }
     },
-    [isSupported, voices, speechRate, speechPitch, speechVolume]
+    [isSupported]
   )
+
+  // Helper function to convert AudioBuffer to WAV Blob
+  const audioBufferToWav = (buffer: AudioBuffer): Blob => {
+    const length = buffer.length
+    const numberOfChannels = buffer.numberOfChannels
+    const sampleRate = buffer.sampleRate
+    const arrayBuffer = new ArrayBuffer(44 + length * numberOfChannels * 2)
+    const view = new DataView(arrayBuffer)
+
+    // WAV header
+    const writeString = (offset: number, string: string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i))
+      }
+    }
+
+    writeString(0, 'RIFF')
+    view.setUint32(4, 36 + length * numberOfChannels * 2, true)
+    writeString(8, 'WAVE')
+    writeString(12, 'fmt ')
+    view.setUint32(16, 16, true)
+    view.setUint16(20, 1, true)
+    view.setUint16(22, numberOfChannels, true)
+    view.setUint32(24, sampleRate, true)
+    view.setUint32(28, sampleRate * numberOfChannels * 2, true)
+    view.setUint16(32, numberOfChannels * 2, true)
+    view.setUint16(34, 16, true)
+    writeString(36, 'data')
+    view.setUint32(40, length * numberOfChannels * 2, true)
+
+    // Convert float samples to 16-bit PCM
+    let offset = 44
+    for (let i = 0; i < length; i++) {
+      for (let channel = 0; channel < numberOfChannels; channel++) {
+        const sample = Math.max(-1, Math.min(1, buffer.getChannelData(channel)[i]))
+        view.setInt16(offset, sample * 0x7FFF, true)
+        offset += 2
+      }
+    }
+
+    return new Blob([arrayBuffer], { type: 'audio/wav' })
+  }
 
   return {
     isSupported,

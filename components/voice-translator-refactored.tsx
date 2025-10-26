@@ -451,7 +451,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
   const handleDownloadAudio = useCallback(
     (text: string, languageCode: string, languageName: string) => {
       if (!text.trim() || !isTTSSupported) return;
-      const filename = `translation-${languageName}-${Date.now()}.webm`;
+      const filename = `translation-${languageName}-${Date.now()}.wav`;
       downloadAudio(text, languageCode, filename);
     },
     [isTTSSupported, downloadAudio]
