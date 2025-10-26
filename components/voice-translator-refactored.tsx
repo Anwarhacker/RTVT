@@ -478,7 +478,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
               <div className="flex self-end gap-2">
                 <HistoryDialog />
                 <SettingsDialog />
-                <Button
+                {/* <Button
                   onClick={() => window.open("/dictionary", "_blank")}
                   variant="outline"
                   size="sm"
@@ -486,7 +486,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                 >
                   <BookOpen className="h-4 w-4 mr-2" />
                   Dictionary
-                </Button>
+                </Button> */}
               </div>
 
               <LanguageSwapSection

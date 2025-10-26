@@ -1,8 +1,16 @@
 "use client";
 
-import { Globe, Sparkles, Volume2, Languages, BookOpen } from "lucide-react";
+import {
+  Globe,
+  Sparkles,
+  Volume2,
+  Languages,
+  BookOpen,
+  ImageIcon,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export function AppHeader() {
   return (
@@ -61,15 +69,29 @@ export function AppHeader() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto flex gap-4">
         <Button
-          onClick={() => window.open("/dictionary", "_blank")}
+          asChild
           variant="outline"
           size="sm"
-          className="bg-background/60 hover:bg-background transition-all duration-300 hover:scale-[1.02] rounded-lg shadow-sm"
+          className="bg-background/60  transition-all duration-300 hover:scale-[1.02] rounded-lg shadow-sm"
         >
-          <BookOpen className="h-4 w-4 mr-2" />
-          Dictionary
+          <Link href="/dictionary">
+            <BookOpen className="h-4 w-4 mr-2" />
+            Dictionary
+          </Link>
+        </Button>
+
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="bg-background/60  transition-all duration-300 hover:scale-[1.02] rounded-lg shadow-sm"
+        >
+          <Link href="/image-analysis">
+            <ImageIcon className="h-4 w-4 mr-2" />
+            Image Analysis
+          </Link>
         </Button>
       </div>
     </div>
