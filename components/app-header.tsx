@@ -1,6 +1,8 @@
 "use client";
 
-import { Globe, Sparkles, Volume2, Languages } from "lucide-react";
+import { Globe, Sparkles, Volume2, Languages, BookOpen } from "lucide-react";
+import { Button } from "./ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export function AppHeader() {
   return (
@@ -57,6 +59,18 @@ export function AppHeader() {
             25+ Languages
           </span>
         </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <Button
+          onClick={() => window.open("/dictionary", "_blank")}
+          variant="outline"
+          size="sm"
+          className="bg-background/60 hover:bg-background transition-all duration-300 hover:scale-[1.02] rounded-lg shadow-sm"
+        >
+          <BookOpen className="h-4 w-4 mr-2" />
+          Dictionary
+        </Button>
       </div>
     </div>
   );

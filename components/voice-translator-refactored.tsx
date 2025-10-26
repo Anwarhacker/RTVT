@@ -119,6 +119,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     speak,
     stop: stopSpeaking,
     setRate,
+    downloadAudio,
     error: ttsError,
   } = useTextToSpeech({
     rate: speechSpeed,
@@ -447,6 +448,15 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     navigator.clipboard.writeText(text);
   };
 
+  const handleDownloadAudio = useCallback(
+    (text: string, languageCode: string, languageName: string) => {
+      if (!text.trim() || !isTTSSupported) return;
+      const filename = `translation-${languageName}-${Date.now()}.webm`;
+      downloadAudio(text, languageCode, filename);
+    },
+    [isTTSSupported, downloadAudio]
+  );
+
   if (!mounted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-white via-gray-100 to-gray-200 flex items-center justify-center">
@@ -538,6 +548,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                 onUpdateOutputLanguage={updateOutputLanguage}
                 onPlayAudio={playAudio}
                 onCopyToClipboard={copyToClipboard}
+                onDownloadAudio={handleDownloadAudio}
               />
             </div>
 

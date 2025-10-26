@@ -12,7 +12,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ClickableText } from "@/components/clickable-text";
 import { GrammarAnalysisDialog } from "@/components/grammar-analysis-dialog";
-import { Languages, Plus, X, Play, Square, Copy, BookOpen } from "lucide-react";
+import {
+  Languages,
+  Plus,
+  X,
+  Play,
+  Square,
+  Copy,
+  BookOpen,
+  Download,
+} from "lucide-react";
 
 interface Language {
   code: string;
@@ -38,6 +47,11 @@ interface OutputSectionProps {
   onUpdateOutputLanguage: (index: number, code: string) => void;
   onPlayAudio: (text: string, languageCode: string, index: number) => void;
   onCopyToClipboard: (text: string) => void;
+  onDownloadAudio: (
+    text: string,
+    languageCode: string,
+    languageName: string
+  ) => void;
 }
 
 export function OutputSection({
@@ -53,6 +67,7 @@ export function OutputSection({
   onUpdateOutputLanguage,
   onPlayAudio,
   onCopyToClipboard,
+  onDownloadAudio,
 }: OutputSectionProps) {
   return (
     <Card className="p-6 lg:p-8 border-2 border-border bg-card border-primary/50 transition-all duration-300 rounded-2xl bg-gray-100">
@@ -171,6 +186,18 @@ export function OutputSection({
                   >
                     <Copy className="h-4 w-4 mr-2" />
                     Copy
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      onDownloadAudio(output.text, output.code, output.name)
+                    }
+                    variant="outline"
+                    size="sm"
+                    disabled={!output.text || !isTTSSupported}
+                    className="flex-1 sm:flex-none bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02] py-2 rounded-xl"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
                   </Button>
                   <GrammarAnalysisDialog
                     text={output.text}
