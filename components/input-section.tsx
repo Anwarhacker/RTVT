@@ -88,7 +88,7 @@ export function InputSection({
   const [showSmartFeatures, setShowSmartFeatures] = useState(false);
 
   return (
-    <Card className="p-6 lg:p-8 border-2 border-border bg-card hover:border-primary/40 transition-all duration-300 rounded-2xl">
+    <Card className="p-6 lg:p-8 border-2 bg-card border-primary/50 transition-all duration-300 rounded-2xl">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">

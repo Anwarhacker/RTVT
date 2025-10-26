@@ -55,7 +55,7 @@ export function OutputSection({
   onCopyToClipboard,
 }: OutputSectionProps) {
   return (
-    <Card className="p-6 lg:p-8 border-2 border-border bg-card hover:border-primary/50 transition-all duration-300 rounded-2xl bg-gray-100">
+    <Card className="p-6 lg:p-8 border-2 border-border bg-card border-primary/50 transition-all duration-300 rounded-2xl bg-gray-100">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center justify-center gap-3">
@@ -81,7 +81,7 @@ export function OutputSection({
           {outputLanguages.map((output, index) => (
             <Card
               key={index}
-              className="p-4 lg:p-5 bg-gray-50 border-2 border-white hover:bg-gray-100 transition-all duration-200 animate-slide-up rounded-xl min-w-70 flex-shrink-0"
+              className="p-4 lg:p-5 bg-gray-50 border border-primary/40 hover:bg-gray-100 transition-all duration-200 animate-slide-up rounded-xl min-w-70 flex-shrink-0"
             >
               <div className="space-y-4 ">
                 <div className="flex justify-between gap-3 ">
