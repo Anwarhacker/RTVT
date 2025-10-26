@@ -157,6 +157,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     speak,
     stop: stopSpeaking,
     setRate,
+    downloadAudio,
     error: ttsError,
   } = useTextToSpeech({
     rate: speechSpeed, // Use dynamic speech speed
@@ -638,27 +639,28 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 relative overflow-hidden">
+    <div className="min-h-screen gradient-bg relative overflow-hidden">
       {showIntro && <IntroSection onContinue={handleContinue} />}
 
       {!showIntro && (
         <>
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Background Elements */}
+            <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
           </div>
 
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 max-w-7xl">
+          <div className="relative z-10 container mx-auto px-3 sm:px-4 lg:px-6 max-w-7xl">
             <AppHeader />
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4 animate-slide-up">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 lg:mb-8 gap-3 sm:gap-4 animate-slide-up">
+              <div className="flex flex-wrap items-center gap-2">
                 <HistoryDialog />
                 <SettingsDialog />
                 <Button
                   onClick={() => window.open("/dictionary", "_blank")}
                   variant="outline"
                   size="sm"
-                  className="bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02]"
+                  className="bg-background/60 hover:bg-background transition-all duration-300 hover:scale-[1.02] rounded-lg shadow-sm"
                 >
                   <BookOpen className="h-4 w-4 mr-2" />
                   Dictionary
@@ -666,7 +668,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
               </div>
 
               {/* Language Swap Section */}
-              <div className="flex items-center gap-4 p-4 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50">
+              <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4 p-3 sm:p-4 bg-card/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-border/30 shadow-lg">
                 <div className="flex items-center gap-2">
                   <Select
                     value={inputLanguage}
@@ -692,7 +694,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                   disabled={
                     inputLanguage === "auto" || outputLanguages.length === 0
                   }
-                  className="p-2 hover:bg-primary/10 transition-all duration-200 hover:scale-110"
+                  className="p-2 hover:bg-primary/10 transition-all duration-300 hover:scale-110 rounded-lg"
                   title="Swap languages"
                 >
                   <ArrowLeftRight className="h-4 w-4 text-primary" />
@@ -754,19 +756,19 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
               </Alert>
             )}
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8 animate-slide-up">
-              <Card className="p-6 lg:p-8 shadow-lg border-0 bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 animate-slide-up">
+              <Card className="p-6 lg:p-8 shadow-lg border border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-xl transition-all duration-300 rounded-2xl">
                 <div className="space-y-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <Mic className="h-5 w-5 text-primary" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="p-2 sm:p-3 bg-primary/10 rounded-lg sm:rounded-xl">
+                        <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                       </div>
-                      <h2 className="text-xl lg:text-2xl font-bold text-card-foreground">
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-card-foreground">
                         Input
                       </h2>
                     </div>
-                    <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex flex-col xs:flex-row items-start xs:items-center gap-2 xs:gap-3 flex-wrap">
                       {detectedLanguage && inputLanguage === "auto" && (
                         <Badge
                           variant="secondary"
@@ -781,7 +783,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                         value={inputLanguage}
                         onValueChange={setInputLanguage}
                       >
-                        <SelectTrigger className="w-full sm:w-44 bg-background/50">
+                        <SelectTrigger className="w-full xs:w-auto xs:min-w-[140px] sm:w-44 bg-background/50">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -799,15 +801,15 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                     placeholder="Type or speak your text here..."
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    className="min-h-32 lg:min-h-40 resize-none text-base bg-background/50 border-border/50 focus:border-primary/50 transition-colors"
+                    className="min-h-24 sm:min-h-32 lg:min-h-40 resize-none text-sm sm:text-base bg-background/50 border-border/50 focus:border-primary/50 transition-colors"
                   />
 
-                  <div className="space-y-3 p-4 bg-muted/30 rounded-lg border border-border/50">
+                  <div className="space-y-3 sm:space-y-4 p-3 sm:p-5 bg-muted/20 rounded-lg sm:rounded-xl border border-border/30">
                     <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                      <Sparkles className="h-4 w-4" />
+                      <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                       Smart Features
                     </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 gap-3">
                       <div className="flex items-center gap-3">
                         <input
                           type="checkbox"
@@ -858,7 +860,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                         </label>
                       </div>
 
-                      <div className="flex items-center gap-3 sm:col-span-2">
+                      <div className="flex items-center gap-3">
                         <input
                           type="checkbox"
                           id="streaming-mode"
@@ -875,7 +877,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                         </label>
                       </div>
 
-                      <div className="flex items-center bg-red-700 border-2 border-black gap-3 sm:col-span-2">
+                      <div className="flex flex-col gap-2 p-3 bg-background/50 rounded-lg">
                         <label
                           htmlFor="speech-speed"
                           className="text-sm text-muted-foreground flex items-center gap-2"
@@ -883,27 +885,29 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                           <Volume2 className="h-4 w-4 text-primary" />
                           Speech Speed: {speechSpeed}x
                         </label>
-                        <input
-                          type="range"
-                          id="speech-speed"
-                          min="0.5"
-                          max="2"
-                          step="0.1"
-                          value={speechSpeed}
-                          onChange={(e) =>
-                            setSpeechSpeed(Number.parseFloat(e.target.value))
-                          }
-                          className="flex-1 accent-primary"
-                        />
-                        <span className="text-xs text-muted-foreground min-w-[3rem] text-right">
-                          {speechSpeed === 0.5
-                            ? "Slow"
-                            : speechSpeed === 1
-                            ? "Normal"
-                            : speechSpeed === 2
-                            ? "Fast"
-                            : "Custom"}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="range"
+                            id="speech-speed"
+                            min="0.5"
+                            max="2"
+                            step="0.1"
+                            value={speechSpeed}
+                            onChange={(e) =>
+                              setSpeechSpeed(Number.parseFloat(e.target.value))
+                            }
+                            className="flex-1 accent-primary"
+                          />
+                          <span className="text-xs text-muted-foreground min-w-[3rem] text-right">
+                            {speechSpeed === 0.5
+                              ? "Slow"
+                              : speechSpeed === 1
+                              ? "Normal"
+                              : speechSpeed === 2
+                              ? "Fast"
+                              : "Custom"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -913,7 +917,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                       onClick={toggleRecording}
                       variant={isListening ? "destructive" : "default"}
                       size="lg"
-                      className="w-full h-14 text-base font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                      className="w-full h-12 sm:h-14 lg:h-16 text-sm sm:text-base font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] rounded-lg sm:rounded-xl shadow-lg"
                       disabled={!isSpeechSupported}
                     >
                       {isListening ? (
@@ -929,7 +933,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                       )}
                     </Button>
 
-                    <div className="flex gap-3">
+                    <div className="flex flex-col xs:flex-row gap-2 xs:gap-3">
                       <Button
                         onClick={handleTranslate}
                         disabled={
@@ -937,7 +941,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                           (isTranslating && !streamingMode) ||
                           isCorrectingGrammar
                         }
-                        className="flex-1 h-12 font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                        className="flex-1 h-10 sm:h-12 text-sm sm:text-base font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] rounded-lg sm:rounded-xl"
                       >
                         {isCorrectingGrammar ? (
                           <>
@@ -972,7 +976,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                       <Button
                         onClick={resetAll}
                         variant="outline"
-                        className="px-6 h-12 font-semibold bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                        className="px-4 sm:px-6 h-10 sm:h-12 text-sm sm:text-base font-semibold bg-background/50 hover:bg-background transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] rounded-lg sm:rounded-xl"
                         title="Reset all inputs and outputs"
                       >
                         <RotateCcw className="h-4 w-4 mr-2" />
@@ -1000,14 +1004,14 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                 </div>
               </Card>
 
-              <Card className="p-6 lg:p-8 shadow-lg border-0 bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+              <Card className="p-6 lg:p-8 shadow-lg border border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-xl transition-all duration-300 rounded-2xl">
                 <div className="space-y-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg">
-                        <Languages className="h-5 w-5 text-black " />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="p-2 sm:p-3 bg-accent/10 rounded-lg sm:rounded-xl">
+                        <Languages className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                       </div>
-                      <h2 className="text-xl lg:text-2xl font-bold text-card-foreground">
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-card-foreground">
                         Output
                       </h2>
                     </div>
@@ -1015,28 +1019,28 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                       onClick={addOutputLanguage}
                       variant="outline"
                       size="sm"
-                      className="self-start sm:self-auto bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02]"
+                      className="self-start sm:self-auto bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02] text-sm"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Add Language
                     </Button>
                   </div>
 
-                  <div className="space-y-4 max-h-96 lg:max-h-[32rem] overflow-y-auto">
+                  <div className="space-y-3 sm:space-y-4 max-h-80 sm:max-h-96 lg:max-h-[32rem] overflow-y-auto">
                     {outputLanguages.map((output, index) => (
                       <Card
                         key={index}
-                        className="p-4 lg:p-5 bg-background/30 border border-border/50 hover:bg-background/50 transition-all duration-200 animate-slide-up"
+                        className="p-3 sm:p-4 lg:p-6 bg-background/40 border border-border/30 hover:bg-background/60 transition-all duration-300 animate-slide-up rounded-lg sm:rounded-xl shadow-sm"
                       >
-                        <div className="space-y-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="space-y-3 sm:space-y-4">
+                          <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 xs:gap-3">
                             <Select
                               value={output.code}
                               onValueChange={(value) =>
                                 updateOutputLanguage(index, value)
                               }
                             >
-                              <SelectTrigger className="w-full sm:w-36 bg-background/50">
+                              <SelectTrigger className="w-full xs:w-32 sm:w-36 bg-background/50 text-sm">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -1053,7 +1057,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                               </SelectContent>
                             </Select>
 
-                            <div className="flex items-center gap-2 self-start sm:self-auto">
+                            <div className="flex items-center gap-2 self-start xs:self-auto">
                               {isStreaming && streamingResults[output.code] && (
                                 <Badge
                                   variant="secondary"
@@ -1076,7 +1080,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                             </div>
                           </div>
 
-                          <div className="min-h-20 lg:min-h-24 p-4 bg-background/70 rounded-lg border border-border/50 text-sm lg:text-base">
+                          <div className="min-h-16 sm:min-h-20 lg:min-h-24 p-3 sm:p-4 bg-background/80 rounded-lg sm:rounded-xl border border-border/30 text-sm lg:text-base shadow-inner">
                             {output.text ? (
                               <ClickableText
                                 text={output.text}
@@ -1090,7 +1094,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                             )}
                           </div>
 
-                          <div className="flex flex-row gap-2">
+                          <div className="flex flex-col xs:flex-row gap-2">
                             <Button
                               onClick={() =>
                                 playAudio(output.text, output.code, index)
@@ -1098,7 +1102,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                               variant="outline"
                               size="sm"
                               disabled={!output.text || !isTTSSupported}
-                              className="flex-1 sm:flex-none bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02] py-2"
+                              className="flex-1 xs:flex-none bg-background/60 hover:bg-background transition-all duration-300 hover:scale-[1.02] py-2 rounded-lg shadow-sm text-xs sm:text-sm"
                             >
                               {currentPlayingIndex === index && isSpeaking ? (
                                 <>
@@ -1117,10 +1121,21 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                               variant="outline"
                               size="sm"
                               disabled={!output.text}
-                              className="flex-1 sm:flex-none bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02] py-2"
+                              className="flex-1 xs:flex-none bg-background/60 hover:bg-background transition-all duration-300 hover:scale-[1.02] py-2 rounded-lg shadow-sm text-xs sm:text-sm"
                             >
                               <Copy className="h-4 w-4 mr-2" />
                               Copy
+                            </Button>
+                            <Button
+                              onClick={() => downloadAudio(output.text, output.code, `translation-${output.name}-${Date.now()}.webm`)}
+                              variant="outline"
+                              size="sm"
+                              disabled={!output.text || !isTTSSupported}
+                              className="flex-1 xs:flex-none bg-background/60 hover:bg-background transition-all duration-300 hover:scale-[1.02] py-2 rounded-lg shadow-sm text-xs sm:text-sm"
+                              title="Download audio as file"
+                            >
+                              <Volume2 className="h-4 w-4 mr-2" />
+                              Download
                             </Button>
                             <GrammarAnalysisDialog
                               text={output.text}
@@ -1130,7 +1145,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                                 variant="outline"
                                 size="sm"
                                 disabled={!output.text}
-                                className="flex-1 sm:flex-none bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02] py-2"
+                                className="flex-1 xs:flex-none bg-background/60 hover:bg-background transition-all duration-300 hover:scale-[1.02] py-2 rounded-lg shadow-sm text-xs sm:text-sm"
                               >
                                 <BookOpen className="h-4 w-4 mr-2" />
                                 Grammar

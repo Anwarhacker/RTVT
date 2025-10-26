@@ -88,11 +88,11 @@ export function InputSection({
   const [showSmartFeatures, setShowSmartFeatures] = useState(false);
 
   return (
-    <Card className="p-6 lg:p-8 border-2 border-border bg-card hover:border-primary/50 transition-all duration-300 rounded-2xl">
+    <Card className="p-6 lg:p-8 border-2 border-border bg-card hover:border-primary/40 transition-all duration-300 rounded-2xl">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#10B981] rounded-lg">
+            <div className="p-2 bg-[#0f766e] rounded-lg">
               <Mic className="h-5 w-5 text-white" />
             </div>
             <h2 className="text-xl lg:text-2xl font-bold text-card-foreground">
@@ -105,7 +105,7 @@ export function InputSection({
           placeholder="Type or speak your text here..."
           value={inputText}
           onChange={(e) => onInputTextChange(e.target.value)}
-          className="min-h-32 lg:min-h-40 resize-none text-base bg-background/60 border-border/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all rounded-xl"
+          className="min-h-32 lg:min-h-40 resize-none text-base bg-background/60 border-border/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all border border-black/20 rounded-xl p-2"
         />
 
         <div className="space-y-4">
@@ -113,7 +113,7 @@ export function InputSection({
             onClick={onToggleRecording}
             variant={isListening ? "destructive" : "default"}
             size="lg"
-            className="w-full bg-[#10B981] h-14 text-base font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] rounded-xl"
+            className="w-full bg-[#0f766e] h-14 text-base font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] rounded-xl"
             disabled={!isSpeechSupported}
           >
             {isListening ? (
@@ -123,7 +123,7 @@ export function InputSection({
               </>
             ) : (
               <>
-                <Mic className="h-5 w-5 mr-3" />
+                <Mic className="h-5 w-5 mr-3 " />
                 Start Recording
               </>
             )}

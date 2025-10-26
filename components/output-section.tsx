@@ -55,7 +55,7 @@ export function OutputSection({
   onCopyToClipboard,
 }: OutputSectionProps) {
   return (
-    <Card className="p-6 lg:p-8 border-2 border-border bg-card hover:border-primary/50 transition-all duration-300 rounded-2xl">
+    <Card className="p-6 lg:p-8 border-2 border-border bg-card hover:border-primary/50 transition-all duration-300 rounded-2xl bg-gray-100">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center justify-center gap-3">
@@ -81,17 +81,17 @@ export function OutputSection({
           {outputLanguages.map((output, index) => (
             <Card
               key={index}
-              className="p-4 lg:p-5 bg-white border-2 border-black hover:bg-gray-100 transition-all duration-200 animate-slide-up rounded-xl min-w-80 flex-shrink-0"
+              className="p-4 lg:p-5 bg-gray-50 border-2 border-white hover:bg-gray-100 transition-all duration-200 animate-slide-up rounded-xl min-w-70 flex-shrink-0"
             >
               <div className="space-y-4 ">
-                <div className="flex justify-between gap-3">
+                <div className="flex justify-between gap-3 ">
                   <Select
                     value={output.code}
                     onValueChange={(value) =>
                       onUpdateOutputLanguage(index, value)
                     }
                   >
-                    <SelectTrigger className="w-36">
+                    <SelectTrigger className="w-36 ">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -128,12 +128,12 @@ export function OutputSection({
                   </div>
                 </div>
 
-                <div className="min-h-20 lg:min-h-24 p-4 bg-background/80 rounded-xl border-2 border-border text-sm lg:text-base">
+                <div className="min-h-20 lg:min-h-24 p-4 bg-white rounded-xl border-2 border-gray-300 text-sm lg:text-base overflow-hidden">
                   {output.text ? (
                     <ClickableText
                       text={output.text}
                       language={output.name}
-                      className="leading-relaxed"
+                      className="leading-relaxed break-words word-wrap overflow-wrap-anywhere whitespace-pre-wrap"
                     />
                   ) : (
                     <span className="text-muted-foreground italic">

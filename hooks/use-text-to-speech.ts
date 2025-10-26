@@ -24,6 +24,7 @@ interface TextToSpeechHook {
   setRate: (rate: number) => void
   setPitch: (pitch: number) => void
   setVolume: (volume: number) => void
+  downloadAudio: (text: string, language?: string, filename?: string) => void
   error: string | null
 }
 
@@ -209,6 +210,91 @@ export function useTextToSpeech(options: TextToSpeechOptions = {}): TextToSpeech
     setSpeechVolume(Math.max(0, Math.min(1, volume)))
   }, [])
 
+  const downloadAudio = useCallback(
+    (text: string, language?: string, filename?: string) => {
+      if (!isSupported || !text.trim()) return
+
+      try {
+        // Create a new utterance for recording
+        const utterance = new SpeechSynthesisUtterance(text)
+        
+        // Set voice and language
+        if (language && TTS_LANGUAGE_CODES[language]) {
+          const langCode = TTS_LANGUAGE_CODES[language]
+          const languageVoice = voices.find(
+            (voice) => voice.lang.startsWith(langCode) || voice.lang.startsWith(language)
+          )
+          if (languageVoice) {
+            utterance.voice = languageVoice
+          }
+          utterance.lang = langCode
+        }
+
+        // Set speech parameters
+        utterance.rate = speechRate
+        utterance.pitch = speechPitch
+        utterance.volume = speechVolume
+
+        // Create audio context for recording
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+        const mediaStreamDestination = audioContext.createMediaStreamDestination()
+        
+        // Create MediaRecorder
+        const mediaRecorder = new MediaRecorder(mediaStreamDestination.stream, {
+          mimeType: 'audio/webm'
+        })
+        
+        const audioChunks: Blob[] = []
+        
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data)
+          }
+        }
+        
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' })
+          const url = URL.createObjectURL(audioBlob)
+          
+          // Create download link
+          const a = document.createElement('a')
+          a.href = url
+          a.download = filename || `voice-translation-${Date.now()}.webm`
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+          
+          // Clean up
+          URL.revokeObjectURL(url)
+          audioContext.close()
+        }
+        
+        // Start recording
+        mediaRecorder.start()
+        
+        // Speak and stop recording when done
+        utterance.onend = () => {
+          setTimeout(() => {
+            mediaRecorder.stop()
+          }, 500) // Small delay to ensure audio is captured
+        }
+        
+        utterance.onerror = () => {
+          mediaRecorder.stop()
+          audioContext.close()
+        }
+        
+        // Speak the text
+        window.speechSynthesis.speak(utterance)
+        
+      } catch (error) {
+        console.error('Audio download error:', error)
+        setError('Failed to download audio')
+      }
+    },
+    [isSupported, voices, speechRate, speechPitch, speechVolume]
+  )
+
   return {
     isSupported,
     isSpeaking,
@@ -221,6 +307,7 @@ export function useTextToSpeech(options: TextToSpeechOptions = {}): TextToSpeech
     setRate,
     setPitch,
     setVolume,
+    downloadAudio,
     error,
   }
 }

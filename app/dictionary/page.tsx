@@ -100,38 +100,40 @@ export default function DictionaryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center gap-4 mb-8">
+    <div className="min-h-screen gradient-bg p-3 sm:p-4">
+      <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
+        <div className="flex flex-col xs:flex-row items-start xs:items-center gap-3 xs:gap-4 mb-6 sm:mb-8">
           <Link href="/">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="rounded-lg shadow-sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Translator
             </Button>
           </Link>
         </div>
-        <div className="flex items-center justify-center gap-3">
-          <BookOpen className="h-8 w-8 text-green-600" />
-          <h1 className="text-3xl font-bold text-gray-900">Dictionary</h1>
+        <div className="flex items-center justify-center gap-2 sm:gap-3 w-full">
+          <div className="p-2 sm:p-3 bg-primary/10 rounded-lg sm:rounded-xl">
+            <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dictionary</h1>
         </div>
 
-        <Card className="p-6 shadow-2xl border border-black/50">
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
+        <Card className="p-4 sm:p-6 shadow-lg border border-border/50 bg-card/95 backdrop-blur-sm rounded-xl sm:rounded-2xl">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+              <div className="lg:col-span-2">
                 <Textarea
                   placeholder="Enter a word or sentence to get meanings..."
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  className="min-h-20 border border-black/30"
+                  className="min-h-16 sm:min-h-20 rounded-lg text-sm sm:text-base"
                 />
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <Select
                   value={targetLanguage}
                   onValueChange={setTargetLanguage}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm sm:text-base">
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>
@@ -145,7 +147,7 @@ export default function DictionaryPage() {
                 <Button
                   onClick={handleSearch}
                   disabled={!inputText.trim() || isLoading}
-                  className="w-full"
+                  className="w-full rounded-lg shadow-sm text-sm sm:text-base h-9 sm:h-10"
                 >
                   {isLoading ? (
                     <>
@@ -166,31 +168,31 @@ export default function DictionaryPage() {
 
         {meanings.length > 0 && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-semibold text-gray-900">
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
               Word Meanings
             </h2>
-            <div className="grid gap-4">
+            <div className="grid gap-3 sm:gap-4">
               {meanings.map((meaning, index) => (
                 <Card
                   key={index}
-                  className="p-5 hover:shadow-md transition-shadow"
+                  className="p-4 sm:p-5 hover:shadow-md transition-shadow border border-border/30 bg-card/90 rounded-lg sm:rounded-xl"
                 >
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-xl font-bold text-green-700">
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-3">
+                      <h3 className="text-lg sm:text-xl font-bold text-primary">
                         {meaning.word}
                       </h3>
-                      <span className="px-2 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+                      <span className="px-2 sm:px-3 py-1 bg-primary/10 text-primary text-xs sm:text-sm rounded-full font-medium self-start">
                         {meaning.partOfSpeech}
                       </span>
                     </div>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-sm sm:text-base text-foreground leading-relaxed">
                       {meaning.definition}
                     </p>
                     {meaning.example && (
-                      <div className="p-3 bg-gray-50 rounded-lg border-l-4 border-green-500">
-                        <p className="text-sm text-gray-600 italic">Example:</p>
-                        <p className="text-gray-800">{meaning.example}</p>
+                      <div className="p-2 sm:p-3 bg-muted/30 rounded-lg border-l-4 border-primary">
+                        <p className="text-xs sm:text-sm text-muted-foreground italic">Example:</p>
+                        <p className="text-sm sm:text-base text-foreground">{meaning.example}</p>
                       </div>
                     )}
                   </div>

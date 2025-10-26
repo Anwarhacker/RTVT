@@ -9,8 +9,18 @@ export function AppHeader() {
         {/* <div className="p-3 bg-black rounded-2xl">
           <Globe className="h-8 w-8 text-white" />
         </div> */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black">
-          Real-Time Voice Translator
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground">
+          <span className="inline-block animate-fade-in" style={{animationDelay: '0.1s'}}>
+            Real-Time
+          </span>
+          {' '}
+          <span className="inline-block animate-fade-in bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent" style={{animationDelay: '0.3s'}}>
+            Voice
+          </span>
+          {' '}
+          <span className="inline-block animate-fade-in" style={{animationDelay: '0.5s'}}>
+            Translator
+          </span>
         </h1>
       </div>
       <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 text-balance">
@@ -18,22 +28,22 @@ export function AppHeader() {
         translation
       </p>
 
-      <div className="flex flex-wrap justify-center gap-4 mb-8 animate-slide-up">
-        <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-black">
-          <Sparkles className="h-4 w-4 text-black" />
-          <span className="text-sm font-medium text-black">
+      <div className="flex flex-wrap justify-center gap-4 mb-8 animate-slide-in-up" style={{animationDelay: '0.7s'}}>
+        <div className="flex items-center gap-2 px-4 py-2 bg-card/60 rounded-full border border-border/30 backdrop-blur-sm">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium text-foreground">
             Real-time Translation
           </span>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-black">
-          <Volume2 className="h-4 w-4 text-black" />
-          <span className="text-sm font-medium text-black">
+        <div className="flex items-center gap-2 px-4 py-2 bg-card/60 rounded-full border border-border/30 backdrop-blur-sm">
+          <Volume2 className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium text-foreground">
             Voice Recognition
           </span>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-black">
-          <Languages className="h-4 w-4 text-black" />
-          <span className="text-sm font-medium text-black">25+ Languages</span>
+        <div className="flex items-center gap-2 px-4 py-2 bg-card/60 rounded-full border border-border/30 backdrop-blur-sm">
+          <Languages className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium text-foreground">25+ Languages</span>
         </div>
       </div>
     </div>
