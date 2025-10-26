@@ -92,7 +92,7 @@ export function InputSection({
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#0f766e] rounded-lg">
+            <div className="p-2 bg-[#3182ce] rounded-lg">
               <Mic className="h-5 w-5 text-white" />
             </div>
             <h2 className="text-xl lg:text-2xl font-bold text-card-foreground">
@@ -113,7 +113,7 @@ export function InputSection({
             onClick={onToggleRecording}
             variant={isListening ? "destructive" : "default"}
             size="lg"
-            className="w-full bg-[#0f766e] h-14 text-base font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] rounded-xl"
+            className="w-full bg-[#3182ce] h-14 text-base font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] rounded-xl"
             disabled={!isSpeechSupported}
           >
             {isListening ? (

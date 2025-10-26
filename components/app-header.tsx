@@ -10,15 +10,22 @@ export function AppHeader() {
           <Globe className="h-8 w-8 text-white" />
         </div> */}
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground">
-          <span className="inline-block animate-fade-in" style={{animationDelay: '0.1s'}}>
+          <span
+            className="inline-block animate-fade-in"
+            style={{ animationDelay: "0.1s" }}
+          >
             Real-Time
-          </span>
-          {' '}
-          <span className="inline-block animate-fade-in bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent" style={{animationDelay: '0.3s'}}>
+          </span>{" "}
+          <span
+            className="inline-block animate-fade-in bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"
+            style={{ animationDelay: "0.3s" }}
+          >
             Voice
-          </span>
-          {' '}
-          <span className="inline-block animate-fade-in" style={{animationDelay: '0.5s'}}>
+          </span>{" "}
+          <span
+            className="inline-block animate-fade-in"
+            style={{ animationDelay: "0.5s" }}
+          >
             Translator
           </span>
         </h1>
@@ -28,7 +35,10 @@ export function AppHeader() {
         translation
       </p>
 
-      <div className="flex flex-wrap justify-center gap-4 mb-8 animate-slide-in-up" style={{animationDelay: '0.7s'}}>
+      <div
+        className="flex flex-wrap justify-center gap-4 mb-8 animate-slide-in-up"
+        style={{ animationDelay: "0.7s" }}
+      >
         <div className="flex items-center gap-2 px-4 py-2 bg-card/60 rounded-full border border-border/30 backdrop-blur-sm">
           <Sparkles className="h-4 w-4 text-primary" />
           <span className="text-sm font-medium text-foreground">
@@ -43,7 +53,9 @@ export function AppHeader() {
         </div>
         <div className="flex items-center gap-2 px-4 py-2 bg-card/60 rounded-full border border-border/30 backdrop-blur-sm">
           <Languages className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-foreground">25+ Languages</span>
+          <span className="text-sm font-medium text-foreground">
+            25+ Languages
+          </span>
         </div>
       </div>
     </div>

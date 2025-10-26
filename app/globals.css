@@ -129,8 +129,8 @@
 /* Enhanced footer animations and modern design utilities */
 @layer utilities {
   .animate-fade-in {
-    animation: fadeIn 0.8s ease-out forwards;
-    opacity: 0;
+    animation: fadeIn 2s ease-in-out infinite;
+    opacity: 1;
   }
 
   .animate-slide-in-up {
@@ -201,13 +201,13 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
+  0%, 100% {
     opacity: 1;
     transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-5px);
   }
 }
 
