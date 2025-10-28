@@ -5,10 +5,48 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, language, voice, format = 'mp3' } = await request.json()
+    const { text, language, voice, format = 'mp3', voiceId, stability = 0.5, similarity_boost = 0.5 } = await request.json()
 
     if (!text) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 })
+    }
+
+    // Use ElevenLabs for TTS if API key available and voiceId provided (cloned voice)
+    const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY;
+    if (elevenLabsApiKey && voiceId) {
+      try {
+        const elevenLabsResponse = await fetch(
+          `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+          {
+            method: 'POST',
+            headers: {
+              'Accept': 'audio/mpeg',
+              'Content-Type': 'application/json',
+              'xi-api-key': elevenLabsApiKey,
+            },
+            body: JSON.stringify({
+              text: text.substring(0, 2500), // ElevenLabs limit
+              model_id: 'eleven_monolingual_v1',
+              voice_settings: {
+                stability,
+                similarity_boost,
+              },
+            }),
+          }
+        );
+
+        if (elevenLabsResponse.ok) {
+          const audioBuffer = await elevenLabsResponse.arrayBuffer();
+          return new NextResponse(audioBuffer, {
+            headers: {
+              'Content-Type': 'audio/mpeg',
+              'Content-Disposition': `attachment; filename="translation-custom-${Date.now()}.mp3"`,
+            },
+          });
+        }
+      } catch (elevenLabsError) {
+        console.warn('ElevenLabs TTS failed, falling back to Google TTS:', elevenLabsError);
+      }
     }
 
     // Example integrations with popular TTS services:

@@ -1,474 +1,301 @@
-# Real-Time Voice Translator
+# Voice Translator Application
 
-A sophisticated web application that provides real-time voice translation capabilities using advanced speech recognition, AI-powered translation, and text-to-speech technologies. Built with Next.js and powered by Google's Gemini AI.
+A comprehensive multilingual voice translation application built with Next.js, featuring real-time speech recognition, text-to-speech, image analysis, and dictionary functionality.
 
-## 🚀 Features
+## Overview
 
-### Core Translation Features
+This application provides a complete translation ecosystem with the following core features:
 
-- **Real-time Speech Recognition** - Convert speech to text using Web Speech API
-- **Grammar Correction** - Automatic grammar, spelling, and punctuation correction before translation
-- **AI-Powered Translation** - Translate text using Google Gemini 2.0 Flash model
-- **Text-to-Speech Output** - Convert translated text back to speech with speed controls
-- **Multi-language Support** - Support for 25+ languages including major Indian languages
-- **Streaming Translation** - Real-time word-by-word translation updates
-- **Auto-translate Mode** - Automatic translation as you speak
+- **Voice Translation**: Real-time speech-to-text and text-to-speech translation
+- **Image Analysis**: AI-powered image content analysis and translation
+- **Dictionary**: Word-by-word translation with meanings
+- **Grammar Correction**: Automatic grammar improvement for input text
+- **Voice Cloning**: Custom voice model creation using ElevenLabs
+- **Translation History**: Persistent storage of translation sessions
 
-### User Interface Features
-
-- **Modern Responsive Design** - Optimized for all screen sizes with contemporary UI patterns
-- **Dark/Light Mode** - Automatic theme switching based on system preferences
-- **Enhanced Visual Design** - Clean interface with green gradient theme and micro-interactions
-- **Accessibility** - Screen reader support and keyboard navigation
-- **Visual Feedback** - Real-time status indicators, animations, and progress feedback
-- **Speed Controls** - Adjustable playback speed from 0.5x to 2x for audio output
-
-### Advanced Features
-
-- **Translation History** - Local storage of all translation sessions with timestamps
-- **Export Functionality** - Export translation history as JSON files
-- **Comprehensive Settings** - Adjust TTS voice, rate, pitch, volume, and grammar correction
-- **Multiple Output Languages** - Translate to multiple languages simultaneously
-- **Copy to Clipboard** - Easy copying of translated text
-- **Reset Functionality** - Quick reset of all inputs and outputs
-- **Grammar Toggle** - Enable/disable automatic grammar correction
-- **Clickable Word Analysis** - Click any word in translations for detailed definitions and context
-- **Grammar Analysis** - Parts of speech tagging with detailed grammatical breakdown
-- **Modular Component Architecture** - Clean, maintainable code structure with separate components
-
-## 🛠 Technologies Used
-
-### Frontend Framework
-
-- **Next.js 14** - React framework with App Router
-- **React 18** - Component-based UI library
-- **TypeScript** - Type-safe JavaScript development
-
-### Styling & UI
-
-- **Tailwind CSS v4** - Utility-first CSS framework with custom design tokens
-- **shadcn/ui** - High-quality React component library
-- **Lucide React** - Beautiful icon library
-- **Geist Font** - Modern typography (Sans & Mono)
-- **CSS Animations** - Smooth transitions and micro-interactions
-
-### APIs & Services
-
-- **Google Gemini 2.0 Flash** - AI-powered translation and grammar correction
-- **Web Speech API** - Browser-based speech recognition
-- **Speech Synthesis API** - Browser-based text-to-speech with speed controls
-- **Server-Sent Events (SSE)** - Real-time streaming updates
-
-## 📁 File Structure
-
-\`\`\`
-voice-translator/
-├── app/
-│ ├── api/
-│ │ ├── correct-grammar/
-│ │ │ └── route.ts # Grammar correction API endpoint
-│ │ ├── grammar-analysis/
-│ │ │ └── route.ts # Grammar analysis API endpoint
-│ │ ├── word-info/
-│ │ │ └── route.ts # Word information API endpoint
-│ │ └── translate/
-│ │ ├── route.ts # Main translation API endpoint
-│ │ └── stream/
-│ │ └── route.ts # Streaming translation API
-│ ├── globals.css # Global styles with modern design tokens
-│ ├── layout.tsx # Root layout with fonts and analytics
-│ └── page.tsx # Main page component
-├── components/
-│ ├── ui/ # shadcn/ui components
-│ │ ├── button.tsx
-│ │ ├── card.tsx
-│ │ ├── dialog.tsx
-│ │ ├── select.tsx
-│ │ ├── slider.tsx
-│ │ ├── textarea.tsx
-│ │ └── ...
-│ ├── voice-translator.tsx # Main translator component (refactored)
-│ ├── intro-section.tsx # Landing page intro component
-│ ├── app-header.tsx # Main header component
-│ ├── app-footer.tsx # Footer with team credits (responsive)
-│ ├── quick-tips.tsx # User tips component
-│ ├── status-indicator.tsx # Operation status component
-│ ├── clickable-text.tsx # Interactive text with word definitions
-│ ├── grammar-analysis-dialog.tsx # Grammar analysis modal
-│ ├── settings-dialog.tsx # Enhanced settings with grammar options
-│ └── history-dialog.tsx # Translation history modal
-├── hooks/
-│ ├── use-speech-recognition.ts # Speech recognition hook
-│ ├── use-text-to-speech.ts # Enhanced TTS hook with speed controls
-│ ├── use-streaming-translation.ts # Streaming translation hook
-│ └── use-translation-history.ts # History management hook
-├── lib/
-│ └── utils.ts # Utility functions (cn, etc.)
-├── next.config.mjs # Next.js configuration
-├── package.json # Dependencies and scripts
-├── tsconfig.json # TypeScript configuration
-└── README.md # Project documentation
-\`\`\`
-
-## 🔧 Setup Instructions
-
-### Prerequisites
-
-- Node.js 18+ installed
-- Google Cloud account with Gemini API access
-- Modern web browser with Web Speech API support
-
-### Installation
-
-1. **Clone the repository**
-   \`\`\`bash
-   git clone <repository-url>
-   cd voice-translator
-   \`\`\`
-
-2. **Install dependencies**
-   \`\`\`bash
-   npm install
-   \`\`\`
-
-3. **Configure API Key**
-
-   - Get your Gemini API key from Google AI Studio
-   - The application uses the key: `AIzaSyCH11Alz5Zq7vqna7bC4-Up81JVmQx6zBI`
-   - Key is configured in the API routes (`app/api/translate/route.ts`)
-
-4. **Run the development server**
-   \`\`\`bash
-   npm run dev
-   \`\`\`
-
-5. **Open the application**
-   - Navigate to `http://localhost:3000`
-   - Grant microphone permissions when prompted
-
-## 🌐 Supported Languages
-
-### European Languages
-
-- English, Spanish, French, German, Italian, Portuguese, Dutch, Russian, Polish, Swedish, Norwegian, Danish, Finnish
-
-### Asian Languages
-
-- Chinese (Simplified & Traditional), Japanese, Korean, Thai, Vietnamese, Indonesian, Malay
-
-### Indian Subcontinent Languages
-
-- Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, Odia, Assamese, Nepali, Sinhala
-
-### Middle Eastern & African Languages
-
-- Arabic, Hebrew, Turkish, Persian, Swahili
-
-## 🔄 Workflow
-
-### 1. Speech Input
-
-- User clicks microphone button to start recording
-- Web Speech API converts speech to text in real-time
-- Interim results are displayed as user speaks with visual feedback
-- Final transcript is captured when user stops speaking
-
-### 2. Grammar Correction (Optional)
-
-- If enabled, text is first sent to `/api/correct-grammar` endpoint
-- Gemini AI corrects grammar, spelling, and punctuation
-- Corrected text is displayed with visual indication
-- Users can toggle this feature on/off in settings
-
-### 3. Translation Process
-
-- Corrected (or original) text is sent to Gemini API via `/api/translate` endpoint
-- AI processes the text and returns translations for all target languages
-- Multiple target languages can be processed simultaneously
-- Streaming mode provides word-by-word updates via Server-Sent Events
-
-### 4. Audio Output
-
-- Translated text is converted to speech using Speech Synthesis API
-- Users can adjust playback speed from 0.5x to 2x using slider controls
-- Voice selection and speech parameters are configurable in settings
-- Auto-play option available for immediate audio feedback
-- Manual playback controls for each translation with visual feedback
-
-### 5. Data Management
-
-- All translations are automatically saved to localStorage with timestamps
-- History includes source text, corrected text, and all translations
-- Users can export complete history as JSON files
-- Settings and preferences are persisted across browser sessions
-
-## 🎛 API Endpoints
-
-### POST `/api/correct-grammar`
-
-Corrects grammar, spelling, and punctuation in the input text.
-
-**Request Body:**
-\`\`\`json
-{
-"text": "hello world how are you doing today"
-}
-\`\`\`
-
-**Response:**
-\`\`\`json
-{
-"correctedText": "Hello world! How are you doing today?",
-"corrections": ["Added capitalization", "Added punctuation"]
-}
-\`\`\`
-
-### POST `/api/grammar-analysis`
-
-Analyzes grammatical structure and provides parts of speech tagging.
-
-**Request Body:**
-\`\`\`json
-{
-"text": "Hello world! How are you doing today?",
-"language": "English"
-}
-\`\`\`
-
-**Response:**
-\`\`\`json
-{
-"analysis": {
-"words": [
-{"word": "Hello", "pos": "interjection", "definition": "greeting", "role": "greeting phrase"},
-{"word": "world", "pos": "noun", "definition": "the earth", "role": "object of address"}
-],
-"sentence_structure": "Simple exclamatory sentence with greeting",
-"grammar_notes": "Informal greeting followed by question"
-}
-}
-\`\`\`
-
-### POST `/api/word-info`
-
-Provides detailed information about a specific word in context.
-
-**Request Body:**
-\`\`\`json
-{
-"word": "world",
-"sentence": "Hello world! How are you doing today?",
-"language": "English"
-}
-\`\`\`
-
-**Response:**
-\`\`\`json
-{
-"word": "world",
-"explanation": "Detailed explanation with definition, etymology, usage, and examples",
-"language": "English"
-}
-\`\`\`
-
-### POST `/api/translate`
-
-Translates text to specified target languages.
-
-**Request Body:**
-\`\`\`json
-{
-"text": "Hello world! How are you doing today?",
-"targetLanguages": ["es", "fr", "hi"],
-"sourceLanguage": "en"
-}
-\`\`\`
-
-**Response:**
-\`\`\`json
-{
-"translations": {
-"es": "¡Hola mundo! ¿Cómo estás hoy?",
-"fr": "Bonjour le monde! Comment allez-vous aujourd'hui?",
-"hi": "नमस्ते दुनिया! आज आप कैसे हैं?"
-},
-"detectedLanguage": "en"
-}
-\`\`\`
-
-### POST `/api/translate/stream`
-
-Provides streaming translation updates via Server-Sent Events.
-
-**Request Body:** Same as `/api/translate`
-
-**Response:** SSE stream with progressive translation updates
-
-## 🎨 Design System
-
-### Color Palette
-
-- **Primary:** Modern green (`oklch(0.45 0.15 162.4)`)
-- **Secondary:** Lighter green variants
-- **Background:** Clean gradients and glass morphism effects
-- **Accent:** Complementary green tones with subtle animations
-
-### Typography
-
-- **Headings:** Geist Sans with improved hierarchy
-- **Body:** Geist Sans with optimized line heights
-- **Code:** Geist Mono for technical content
-
-### Layout Principles
-
-- Mobile-first responsive design with enhanced breakpoints
-- Flexbox-based layouts with improved spacing
-- Card-based components with subtle shadows and backdrop blur
-- Smooth animations and micro-interactions
-- Semantic HTML structure for accessibility
-- Modular component architecture for maintainability
-
-### Interactive Elements
-
-- Hover animations on buttons and cards
-- Loading states with skeleton animations
-- Progress indicators for ongoing operations
-- Visual feedback for all user interactions
-- Clickable text elements for word analysis
-
-## 🧩 Component Architecture
+## Application Structure
 
 ### Main Components
 
-- **VoiceTranslator** - Core application logic and state management
-- **IntroSection** - Landing page with feature showcase
-- **AppHeader** - Main header with title and feature badges
-- **AppFooter** - Responsive footer with team credits
-- **StatusIndicator** - Real-time operation status display
+#### Core Translation Components
 
-### Feature Components
+- **VoiceTranslator** (`components/voice-translator-refactored.tsx`): Main application component that orchestrates all translation features
+- **InputSection** (`components/input-section.tsx`): Handles text input, speech recognition, and translation controls
+- **OutputSection** (`components/output-section.tsx`): Displays translated text with TTS playback and download options
+- **LanguageSwapSection** (`components/language-swap-section.tsx`): Manages input/output language selection and swapping
 
-- **ClickableText** - Interactive text with word definitions
-- **GrammarAnalysisDialog** - Parts of speech analysis modal
-- **SettingsDialog** - Application configuration
-- **HistoryDialog** - Translation history management
-- **QuickTips** - User guidance and tips
+#### Feature Components
 
-## 🔍 New Features Added
+- **ImageAnalysis** (`components/image-analysis.tsx`): Upload and analyze images using AI, with multi-language summaries
+- **ClickableText** (`components/clickable-text.tsx`): Interactive text component with word-level dictionary lookup
+- **GrammarAnalysisDialog** (`components/grammar-analysis-dialog.tsx`): Detailed grammar analysis and correction suggestions
+- **SettingsDialog** (`components/settings-dialog.tsx`): Application settings including TTS voices and voice cloning
+- **HistoryDialog** (`components/history-dialog.tsx`): Translation history management and playback
 
-### Word Analysis System
+#### UI Components
 
-- Click any word in translations to get detailed information
-- Etymology, definitions, synonyms, and usage examples
-- Context-aware explanations based on sentence structure
+- **AppHeader** (`components/app-header.tsx`): Navigation header with links to different features
+- **AppFooter** (`components/app-footer.tsx`): Footer with branding and links
+- **StatusIndicator** (`components/status-indicator.tsx`): Real-time status display for ongoing operations
+- **ErrorAlerts** (`components/error-alerts.tsx`): Error handling and user notifications
+- **QuickTips** (`components/quick-tips.tsx`): User guidance and feature hints
 
-### Grammar Analysis
+### Custom Hooks
 
-- Complete grammatical breakdown of text
-- Parts of speech tagging with color coding
-- Sentence structure analysis
-- Educational grammar notes
+#### Speech and Audio Hooks
 
-### Component Refactoring
+- **useSpeechRecognition** (`hooks/use-speech-recognition.ts`): Web Speech API integration for voice input
+- **useTextToSpeech** (`hooks/use-text-to-speech.ts`): Text-to-speech functionality with voice selection and audio download
+- **useStreamingTranslation** (`hooks/use-streaming-translation.ts`): Real-time streaming translation for multiple languages
 
-- Broke down large components into smaller, focused modules
-- Improved code maintainability and reusability
-- Better separation of concerns
-- Enhanced responsive design across all components
+#### Data Management Hooks
 
-## 👥 Development Team
+- **useTranslationHistory** (`hooks/use-translation-history.ts`): Local storage management for translation history
 
-**Developers:**
+### API Routes
 
-- Anwar Patel
-- Goussoddin
-- Pooja Pasarge
-- Shreya Reddy
+#### Translation APIs
 
-**Special Thanks:**
+- **`/api/translate`** (`app/api/translate/route.ts`): Main translation endpoint using Google Gemini AI
 
-- Open Source Communityteractive Elements
+  - Supports multiple output languages simultaneously
+  - Handles auto-detection of input language
+  - Rate limiting and text length validation
 
-- Hover animations on buttons and cards
-- Loading states with skeleton animations
-- Progress indicators for ongoing operations
-- Visual feedback for all user interactions
+- **`/api/translate/stream`** (`app/api/translate/stream/route.ts`): Streaming translation for real-time updates
 
-## 🔧 Configuration
+#### Media APIs
 
-### Grammar Correction Settings
+- **`/api/text-to-speech`** (`app/api/text-to-speech/route.ts`): Text-to-speech conversion
 
-- Toggle grammar correction on/off
-- Automatic correction before translation
-- Visual indication of corrections made
+  - Primary: ElevenLabs (for cloned voices)
+  - Fallback: Google Translate TTS
+  - Supports multiple formats and voice settings
 
-### Speech Recognition Settings
+- **`/api/image-upload`** (`app/api/image-upload/route.ts`): Image upload handling via Cloudinary
 
-- Language detection: Automatic
-- Continuous recognition: Enabled
-- Interim results: Enabled for real-time feedback
-- Enhanced error handling and recovery
+- **`/api/image-analysis`** (`app/api/image-analysis/route.ts`): AI-powered image analysis
+  - Uses Google Gemini Vision API
+  - Provides multi-language summaries
+  - Integrates with translation API for cross-language analysis
 
-### Text-to-Speech Settings
+#### Utility APIs
 
-- Configurable voice selection by language
-- Adjustable playback speed (0.5x to 2x)
-- Adjustable rate, pitch, and volume
-- Auto-play options for translated content
+- **`/api/dictionary`** (`app/api/dictionary/route.ts`): Word translation using Groq AI
 
-## 🐛 Troubleshooting
+  - Word-by-word translation
+  - Supports multiple target languages
 
-### Common Issues
+- **`/api/voice-clone`** (`app/api/voice-clone/route.ts`): Voice cloning using ElevenLabs
 
-**Grammar correction not working:**
+  - Audio sample upload and processing
+  - Custom voice model creation
 
-- Verify API key has access to Gemini models
-- Check network connection and API quotas
-- Ensure input text is not empty
+- **`/api/correct-grammar`** (`app/api/correct-grammar/route.ts`): Grammar correction
+- **`/api/grammar-analysis`** (`app/api/grammar-analysis/route.ts`): Detailed grammar analysis
+- **`/api/word-info`** (`app/api/word-info/route.ts`): Word information and definitions
 
-**Speed controls not responding:**
+### Pages
 
-- Check browser's Speech Synthesis API support
-- Verify audio output device is connected
-- Try different playback speeds to test functionality
+- **`/`** (`app/page.tsx`): Main voice translator interface
+- **`/dictionary`** (`app/dictionary/page.tsx`): Standalone dictionary page
+- **`/image-analysis`** (`app/image-analysis/page.tsx`): Image analysis interface
 
-**Translation errors with Indian languages:**
+## Key Features and Functionality
 
-- Ensure proper language codes are used
-- Check API support for specific Indian languages
-- Verify text encoding for non-Latin scripts
+### 1. Voice Translation
 
-### Browser Compatibility
+- **Speech Recognition**: Real-time voice input using Web Speech API
+- **Multi-language Support**: 25+ languages including major Indian languages
+- **Auto-translation**: Automatic translation on speech completion
+- **Streaming Translation**: Real-time translation updates for multiple languages
+- **Grammar Correction**: Optional automatic grammar improvement
 
-- **Chrome/Edge:** Full support for all features including speed controls
-- **Firefox:** Limited Speech Recognition support, TTS speed may vary
-- **Safari:** Partial support, may require user interaction for audio and speed controls
+### 2. Text-to-Speech (TTS)
 
-## 📈 Performance Optimization
+- **Multiple TTS Engines**: ElevenLabs (premium), Google Translate (free)
+- **Voice Cloning**: Custom voice creation from audio samples
+- **Audio Download**: Save translations as audio files
+- **Voice Settings**: Adjustable speech rate, pitch, and volume
 
-- **Enhanced debouncing** - Prevents excessive API calls for grammar correction and translation
-- **Streaming responses** - Reduces perceived latency with real-time updates
-- **Optimized state management** - Efficient React state updates and re-renders
-- **Local storage optimization** - Compressed history storage
-- **Lazy loading** - Components and features loaded on demand
-- **Bundle optimization** - Tree-shaking and code splitting for faster loads
+### 3. Image Analysis
 
-## 🤝 Contributing
+- **AI Vision**: Google Gemini Vision API integration
+- **Multi-language Summaries**: Automatic translation of image descriptions
+- **Cloud Storage**: Cloudinary integration for image hosting
+- **Detailed Analysis**: Object detection, text recognition, scene description
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### 4. Dictionary and Word Lookup
 
-## 📄 License
+- **Interactive Text**: Clickable translated text for word definitions
+- **Word Translation**: Individual word translation using Groq AI
+- **Contextual Information**: Part of speech, definitions, examples
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+### 5. Translation History
 
-## 🙏 Acknowledgments
+- **Persistent Storage**: Local storage of all translation sessions
+- **Playback**: Re-listen to previous translations
+- **Export**: Download translation history as JSON
+- **Management**: Clear or delete specific entries
 
-- Google Gemini AI for translation capabilities
-- shadcn/ui for beautiful React components
-- Vercel for hosting and deployment platform
-- Web Speech API for browser-based speech recognition
-- Tailwind CSS for utility-first styling approach
+### 6. Settings and Customization
+
+- **TTS Settings**: Voice selection, speech parameters
+- **Voice Cloning**: Manage custom voice models
+- **UI Preferences**: Theme and interface customization
+- **Language Preferences**: Default language settings
+
+## Technology Stack
+
+### Frontend
+
+- **Next.js 14**: React framework with App Router
+- **TypeScript**: Type-safe JavaScript
+- **Tailwind CSS**: Utility-first CSS framework
+- **Radix UI**: Accessible component primitives
+- **Lucide React**: Icon library
+
+### Backend APIs
+
+- **Next.js API Routes**: Server-side API endpoints
+- **Google Gemini AI**: Translation and vision AI
+- **Groq AI**: Fast LLM for dictionary functions
+- **ElevenLabs**: Voice cloning and premium TTS
+- **Cloudinary**: Image hosting and processing
+
+### Key Dependencies
+
+- **@google/genai**: Google Gemini AI integration
+- **groq-sdk**: Groq AI client
+- **cloudinary**: Image management
+- **react-hook-form**: Form handling
+- **zod**: Schema validation
+- **date-fns**: Date utilities
+- **sonner**: Toast notifications
+
+## How It Works
+
+### Translation Flow
+
+1. **Input**: User provides text via typing or speech recognition
+2. **Processing**: Optional grammar correction applied
+3. **Translation**: Text sent to Google Gemini API for translation
+4. **Output**: Translated text displayed with TTS options
+5. **Storage**: Translation saved to history
+
+### Voice Input Flow
+
+1. **Recording**: Web Speech API captures audio
+2. **Transcription**: Speech converted to text in real-time
+3. **Auto-translation**: Automatic translation trigger on speech completion
+4. **Streaming**: Real-time translation updates for multiple languages
+
+### Image Analysis Flow
+
+1. **Upload**: Image uploaded to Cloudinary
+2. **Analysis**: Google Gemini Vision analyzes image content
+3. **Summary**: AI generates detailed description
+4. **Translation**: Summary translated to multiple languages
+
+### Voice Cloning Flow
+
+1. **Audio Upload**: User provides voice sample
+2. **Processing**: ElevenLabs processes audio for voice model
+3. **Model Creation**: Custom voice model generated
+4. **Integration**: Voice available for TTS in translations
+
+## Configuration
+
+### Environment Variables
+
+```env
+# AI APIs
+GEMINI_API_KEY=your_gemini_api_key
+GROQ_API_KEY=your_groq_api_key
+ELEVENLABS_API_KEY=your_elevenlabs_api_key
+
+# Image Storage
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+# Optional TTS APIs
+GOOGLE_TTS_API_KEY=your_google_tts_key
+AZURE_TTS_KEY=your_azure_tts_key
+AWS_POLLY_KEY=your_aws_polly_key
+OPENAI_API_KEY=your_openai_key
+```
+
+### Supported Languages
+
+The application supports 25+ languages including:
+
+- English, Spanish, French, German, Italian, Portuguese
+- Russian, Japanese, Korean, Chinese, Arabic
+- Indian languages: Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, Odia, Assamese, Nepali, Sinhala
+
+## Development
+
+### Prerequisites
+
+- Node.js 18+
+- npm or pnpm
+- API keys for external services
+
+### Installation
+
+```bash
+npm install
+# or
+pnpm install
+```
+
+### Development Server
+
+```bash
+npm run dev
+# or
+pnpm dev
+```
+
+### Build
+
+```bash
+npm run build
+# or
+pnpm build
+```
+
+### Deployment
+
+The application is configured for deployment on Vercel with automatic API route handling and environment variable management.
+
+## Architecture Patterns
+
+### Component Architecture
+
+- **Separation of Concerns**: Each component has a single responsibility
+- **Composition**: Components are composed together for complex features
+- **Reusability**: UI components are shared across features
+
+### State Management
+
+- **Local State**: React useState for component-level state
+- **Custom Hooks**: Encapsulated logic for complex state management
+- **Local Storage**: Persistent data storage for history and settings
+
+### API Design
+
+- **RESTful Routes**: Standard HTTP methods and REST conventions
+- **Error Handling**: Comprehensive error responses and user feedback
+- **Rate Limiting**: Basic rate limiting for API protection
+- **Validation**: Input validation and sanitization
+
+### Performance Optimizations
+
+- **Dynamic Imports**: Code splitting for large components
+- **Memoization**: React.memo for expensive re-renders
+- **Streaming**: Real-time data streaming for better UX
+- **Caching**: Local storage caching for frequently used data
+
+This documentation provides a comprehensive overview of the application's architecture, features, and implementation details. The modular design allows for easy extension and maintenance of individual features.

@@ -2,13 +2,44 @@
 
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { ImageIcon, Upload, Eye } from "lucide-react";
+import { Card } from "./ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Upload, Eye } from "lucide-react";
+
+const languages = [
+  { code: "en", name: "English" },
+  { code: "hi", name: "Hindi" },
+  { code: "kn", name: "Kannada" },
+  { code: "ta", name: "Tamil" },
+  { code: "te", name: "Telugu" },
+  { code: "ml", name: "Malayalam" },
+  { code: "gu", name: "Gujarati" },
+  { code: "mr", name: "Marathi" },
+  { code: "bn", name: "Bengali" },
+  { code: "pa", name: "Punjabi" },
+  { code: "ur", name: "Urdu" },
+  { code: "es", name: "Spanish" },
+  { code: "fr", name: "French" },
+  { code: "de", name: "German" },
+  { code: "it", name: "Italian" },
+  { code: "pt", name: "Portuguese" },
+  { code: "ru", name: "Russian" },
+  { code: "ja", name: "Japanese" },
+  { code: "ko", name: "Korean" },
+  { code: "zh", name: "Chinese" },
+  { code: "ar", name: "Arabic" },
+];
 
 interface AnalyzedImage {
   id: string;
   url: string;
-  summary: string;
+  summary: Record<string, string>;
   loading: boolean;
   error?: string;
 }
@@ -18,6 +49,7 @@ export function ImageAnalysis() {
   const [analyzedImages, setAnalyzedImages] = useState<AnalyzedImage[]>([]);
   const [uploading, setUploading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["en"]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -35,7 +67,7 @@ export function ImageAnalysis() {
     const newImages: AnalyzedImage[] = files.map((file) => ({
       id: `${file.name}-${Date.now()}`,
       url: "",
-      summary: "",
+      summary: {},
       loading: true,
     }));
 
@@ -75,6 +107,7 @@ export function ImageAnalysis() {
           body: JSON.stringify({
             imageUrl,
             prompt: "Analyze this image and provide a summary of its content.",
+            languages: selectedLanguages,
           }),
         });
 
@@ -106,81 +139,126 @@ export function ImageAnalysis() {
   };
 
   return (
-    <div className="mt-6 space-y-4">
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ImageIcon className="h-5 w-5" />
-            Image Analysis
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleFileSelect}
-                className="hidden"
-                id="image-upload"
-              />
-              <label htmlFor="image-upload">
-                <Button variant="outline" className="cursor-pointer" asChild>
-                  <span>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Choose Images
-                  </span>
-                </Button>
-              </label>
-              {files.length > 0 && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  {files.length} image(s) selected
-                </p>
-              )}
-            </div>
-
-            {files.length > 0 && (
+    <Card className="p-4 sm:p-6 shadow-lg border border-border/50 bg-card/95 backdrop-blur-sm rounded-xl sm:rounded-2xl">
+      <div className="space-y-3 sm:space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div className="lg:col-span-2">
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFileSelect}
+              className="hidden"
+              id="image-upload"
+            />
+            <label htmlFor="image-upload">
               <Button
-                onClick={handleUploadAndAnalyze}
-                disabled={uploading || analyzing}
+                variant="outline"
+                className="cursor-pointer w-full rounded-lg shadow-sm text-sm sm:text-base h-9 sm:h-10"
+                asChild
               >
-                {uploading
-                  ? "Uploading..."
-                  : analyzing
-                  ? "Analyzing..."
-                  : "Upload & Analyze"}
+                <span>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Choose Images
+                </span>
               </Button>
-            )}
-
-            {analyzedImages.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="font-semibold">Analysis Results:</h3>
-                {analyzedImages.map((img) => (
-                  <Card key={img.id} className="p-4">
-                    <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                      <img
-                        src={img.url}
-                        alt="Analyzed image"
-                        className="w-full sm:w-24 h-auto sm:h-24 object-cover rounded"
-                      />
-                      <div className="flex-1">
-                        {img.loading ? (
-                          <p>Loading analysis...</p>
-                        ) : img.error ? (
-                          <p className="text-red-500">{img.error}</p>
-                        ) : (
-                          <p className="text-sm">{img.summary}</p>
-                        )}
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+            </label>
+            {files.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-2">
+                {files.length} image(s) selected
+              </p>
             )}
           </div>
-        </CardContent>
-      </Card>
-    </div>
+          <div className="space-y-2 sm:space-y-3">
+            <Select
+              value={selectedLanguages.join(",")}
+              onValueChange={(value) => setSelectedLanguages(value.split(","))}
+            >
+              <SelectTrigger className="text-sm sm:text-base">
+                <SelectValue placeholder="Select languages" />
+              </SelectTrigger>
+              <SelectContent>
+                {languages.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              onClick={handleUploadAndAnalyze}
+              disabled={!files.length || uploading || analyzing}
+              className="w-full rounded-lg shadow-sm text-sm sm:text-base h-9 sm:h-10"
+            >
+              {uploading ? (
+                <>
+                  <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Uploading...
+                </>
+              ) : analyzing ? (
+                <>
+                  <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Eye className="h-4 w-4 mr-2" />
+                  Upload & Analyze
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {analyzedImages.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
+              Analysis Results
+            </h2>
+            <div className="grid gap-3 sm:gap-4">
+              {analyzedImages.map((img) => (
+                <Card
+                  key={img.id}
+                  className="p-4 sm:p-5 hover:shadow-md transition-shadow border border-border/30 bg-card/90 rounded-lg sm:rounded-xl"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                    <img
+                      src={img.url}
+                      alt="Analyzed image"
+                      className="w-full sm:w-32 h-auto sm:h-32 object-cover rounded-lg border"
+                    />
+                    <div className="flex-1 space-y-3">
+                      {img.loading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                          <p className="text-sm text-muted-foreground">
+                            Analyzing image...
+                          </p>
+                        </div>
+                      ) : img.error ? (
+                        <p className="text-sm text-red-500">{img.error}</p>
+                      ) : (
+                        <div className="space-y-3">
+                          {Object.entries(img.summary).map(([lang, text]) => (
+                            <div key={lang} className="space-y-1">
+                              <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full font-medium capitalize">
+                                {lang}
+                              </span>
+                              <p className="text-sm text-foreground leading-relaxed pl-2">
+                                {text}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </Card>
   );
 }

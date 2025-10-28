@@ -69,12 +69,12 @@ export function AppHeader() {
         </div>
       </div>
 
-      <div className="overflow-x-auto flex gap-4">
+      <div className="overflow-x-auto flex gap-4  py-4 rounded-lg  px-4">
         <Button
           asChild
           variant="outline"
-          size="sm"
-          className="bg-background/60  transition-all duration-300 hover:scale-[1.02] rounded-lg shadow-sm"
+          // size="sm"
+          className="bg-background/60 py-6 px-6 transition-all duration-300 hover:scale-[1.02] rounded-lg shadow-sm"
         >
           <Link href="/dictionary">
             <BookOpen className="h-4 w-4 mr-2" />
@@ -86,7 +86,7 @@ export function AppHeader() {
           asChild
           variant="outline"
           size="sm"
-          className="bg-background/60  transition-all duration-300 hover:scale-[1.02] rounded-lg shadow-sm"
+          className="bg-background/60 py-6 px-6 transition-all duration-300 hover:scale-[1.02] rounded-lg shadow-sm"
         >
           <Link href="/image-analysis">
             <ImageIcon className="h-4 w-4 mr-2" />
