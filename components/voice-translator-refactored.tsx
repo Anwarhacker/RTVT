@@ -18,7 +18,7 @@ import { useTextToSpeech } from "@/hooks/use-text-to-speech";
 import { useStreamingTranslation } from "@/hooks/use-streaming-translation";
 import { useTranslationHistory } from "@/hooks/use-translation-history";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Mic, MicOff } from "lucide-react";
+import { BookOpen, Mic, MicOff, Settings } from "lucide-react";
 
 interface OutputLanguage {
   code: string;
@@ -51,6 +51,25 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
   const [speechSpeed, setSpeechSpeed] = useState(0.8);
   const [mounted, setMounted] = useState(false);
   const [voiceInteractionMode, setVoiceInteractionMode] = useState(false);
+
+  // Load settings from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("voice-translator-settings");
+      if (stored) {
+        const settings = JSON.parse(stored);
+        setAutoTranslate(settings.autoTranslate || false);
+        setAutoPlay(settings.autoPlay || false);
+        setStreamingMode(settings.streamingMode || false);
+        setGrammarCorrectionEnabled(
+          settings.grammarCorrectionEnabled !== false
+        ); // Default true
+        setSpeechSpeed(settings.ttsRate || 0.8);
+      }
+    } catch (error) {
+      console.error("Failed to load settings:", error);
+    }
+  }, []);
 
   const languages = [
     { code: "auto", name: "Auto-detect" },
@@ -654,6 +673,9 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     setCurrentPlayingIndex(null);
     setIsTranslating(false);
     setVoiceInteractionMode(false);
+
+    // Clear any stored voice interaction state
+    lastTranscriptRef.current = "";
   };
 
   const addOutputLanguage = () => {
@@ -750,9 +772,9 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                   size="lg"
                   className={`h-16 w-16 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 ${
                     isListening
-                      ? "bg-red-500 hover:bg-red-600 animate-pulse"
+                      ? "bg-red-500  hover:bg-red-600 animate-pulse"
                       : voiceInteractionMode
-                      ? "bg-green-500 hover:bg-green-600"
+                      ? "bg-green-500  hover:bg-green-600"
                       : "bg-primary hover:bg-primary/90"
                   }`}
                   disabled={!isSpeechSupported}
@@ -765,11 +787,11 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                   }
                 >
                   {isSpeaking ? (
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center bg-black">
                       <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                     </div>
                   ) : isListening ? (
-                    <MicOff className="h-6 w-6" />
+                    <MicOff className="h-6 w-6 " />
                   ) : (
                     <Mic className="h-6 w-6" />
                   )}
@@ -795,17 +817,26 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4 animate-slide-up">
               <div className="flex self-end gap-2">
-                <HistoryDialog />
-                <SettingsDialog />
-                {/* <Button
-                  onClick={() => window.open("/dictionary", "_blank")}
-                  variant="outline"
-                  size="sm"
-                  className="bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02]"
-                >
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Dictionary
-                </Button> */}
+                <HistoryDialog>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02]"
+                  >
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    History
+                  </Button>
+                </HistoryDialog>
+                <SettingsDialog>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02]"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Settings
+                  </Button>
+                </SettingsDialog>
               </div>
 
               <LanguageSwapSection

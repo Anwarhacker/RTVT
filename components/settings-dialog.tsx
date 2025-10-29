@@ -59,6 +59,31 @@ export function SettingsDialog({ children }: SettingsDialogProps) {
 
   const { voices, setRate, setPitch, setVolume, setVoice } = useTextToSpeech();
 
+  // Load cloned voices from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("voice-translator-cloned-voices");
+      if (stored) {
+        const clonedVoices = JSON.parse(stored);
+        setVoiceCloning((prev) => ({ ...prev, clonedVoices }));
+      }
+    } catch (error) {
+      console.error("Failed to load cloned voices:", error);
+    }
+  }, []);
+
+  // Save cloned voices to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "voice-translator-cloned-voices",
+        JSON.stringify(voiceCloning.clonedVoices)
+      );
+    } catch (error) {
+      console.error("Failed to save cloned voices:", error);
+    }
+  }, [voiceCloning.clonedVoices]);
+
   // Load settings from localStorage
   useEffect(() => {
     try {
@@ -116,9 +141,12 @@ export function SettingsDialog({ children }: SettingsDialogProps) {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            Settings
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-6">
           {/* Text-to-Speech Settings */}
@@ -249,7 +277,9 @@ export function SettingsDialog({ children }: SettingsDialogProps) {
                       ...prev.clonedVoices,
                       {
                         id: data.voiceId,
-                        name: `Cloned Voice ${prev.clonedVoices.length + 1}`,
+                        name:
+                          voiceCloning.description ||
+                          `Cloned Voice ${prev.clonedVoices.length + 1}`,
                       },
                     ],
                     inputFile: null,

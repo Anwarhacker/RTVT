@@ -21,7 +21,7 @@ export function StatusIndicator({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 animate-scale-in">
+    <div className="fixed  bg-red-700 bottom-6 right-6 z-50 animate-scale-in">
       <Badge
         variant="secondary"
         className="px-4 py-3 shadow-lg bg-card/90 backdrop-blur-sm border border-border/50"

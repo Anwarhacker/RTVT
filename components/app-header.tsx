@@ -14,7 +14,7 @@ import Link from "next/link";
 
 export function AppHeader() {
   return (
-    <div className="text-center py-8 sm:py-12 mb-8 ">
+    <div className="text-center py-8 sm:py-12 ">
       <div className="flex items-center justify-center gap-3 mb-4">
         {/* <div className="p-3 bg-black rounded-2xl">
           <Globe className="h-8 w-8 text-white" />
