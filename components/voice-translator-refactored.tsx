@@ -27,7 +27,7 @@ interface OutputLanguage {
 }
 
 const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
   const [inputText, setInputText] = useState("");
   const [inputLanguage, setInputLanguage] = useState("auto");
   const [outputLanguages, setOutputLanguages] = useState<OutputLanguage[]>([
