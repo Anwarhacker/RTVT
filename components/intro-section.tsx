@@ -8,6 +8,8 @@ import {
   BookOpen,
   Brain,
   ArrowRight,
+  ImageIcon,
+  History,
 } from "lucide-react";
 
 interface IntroSectionProps {
@@ -46,8 +48,8 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
             </h1>
             <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto text-pretty px-4">
               Break language barriers instantly with our advanced AI translator
-              featuring speech recognition, grammar correction, and natural
-              voice synthesis.
+              featuring speech recognition, grammar correction, image analysis,
+              word dictionary, and natural voice synthesis.
             </p>
           </div>
 
@@ -129,6 +131,45 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
                 word definitions
               </p>
             </div>
+
+            <div className="bg-card/70 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-border/30 hover:shadow-lg transition-all duration-300">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
+                <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                Image Analysis
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Upload images and get AI-powered descriptions and translations
+                in multiple languages
+              </p>
+            </div>
+
+            <div className="bg-card/70 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-border/30 hover:shadow-lg transition-all duration-300">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
+                <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                Word Dictionary
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Click any word for instant definitions, translations, and
+                contextual meanings
+              </p>
+            </div>
+
+            <div className="bg-card/70 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-border/30 hover:shadow-lg transition-all duration-300">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
+                <History className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                Translation History
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Save and export your translation history with timestamps and
+                language details
+              </p>
+            </div>
           </div>
 
           <div className="bg-primary rounded-xl sm:rounded-2xl p-6 sm:p-8 mt-8 sm:mt-12">
@@ -160,19 +201,19 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-primary-foreground rounded-full"></div>
                   <span className="text-primary-foreground text-sm sm:text-base">
-                    Clickable word definitions
+                    Image analysis and translation
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-primary-foreground rounded-full"></div>
                   <span className="text-primary-foreground text-sm sm:text-base">
-                    Multiple output languages
+                    Interactive word dictionary
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-primary-foreground rounded-full"></div>
                   <span className="text-primary-foreground text-sm sm:text-base">
-                    Responsive design for all devices
+                    Translation history with export
                   </span>
                 </div>
               </div>
