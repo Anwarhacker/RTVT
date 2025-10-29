@@ -18,7 +18,7 @@ import { useTextToSpeech } from "@/hooks/use-text-to-speech";
 import { useStreamingTranslation } from "@/hooks/use-streaming-translation";
 import { useTranslationHistory } from "@/hooks/use-translation-history";
 import { Button } from "@/components/ui/button";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Mic, MicOff } from "lucide-react";
 
 interface OutputLanguage {
   code: string;
@@ -50,6 +50,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     useState(true);
   const [speechSpeed, setSpeechSpeed] = useState(0.8);
   const [mounted, setMounted] = useState(false);
+  const [voiceInteractionMode, setVoiceInteractionMode] = useState(false);
 
   const languages = [
     { code: "auto", name: "Auto-detect" },
@@ -125,25 +126,46 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     continuous: true,
     interimResults: true,
     language: speechLanguageMap[inputLanguage] || "en-US",
+    autoStopTimeout: 3000, // Auto-stop after 3 seconds of silence
     onResult: async (transcript: string, isFinal: boolean) => {
-      if (isFinal && autoTranslate) {
-        // Process final transcript with grammar correction and translation
-        let processedText = transcript;
-        if (grammarCorrectionEnabled) {
-          processedText = await correctGrammar(transcript);
-        }
+      console.log("[v0] Speech result callback:", {
+        transcript,
+        isFinal,
+        autoTranslate,
+        voiceInteractionMode,
+      });
 
-        // Update input text with processed transcript
-        setInputText((prev) => prev + processedText);
-
-        // Start translation
-        setTimeout(async () => {
-          if (streamingMode) {
-            await startStreamingTranslation();
-          } else {
-            await translateText();
+      if (isFinal) {
+        if (voiceInteractionMode) {
+          // Voice interaction mode: translate to Hindi and speak
+          let processedText = transcript;
+          if (grammarCorrectionEnabled) {
+            processedText = await correctGrammar(transcript);
           }
-        }, 500);
+          await handleVoiceInteraction(processedText);
+        } else if (autoTranslate) {
+          // Normal auto-translate mode
+          let processedText = transcript;
+          if (grammarCorrectionEnabled) {
+            processedText = await correctGrammar(transcript);
+          }
+
+          // Update input text with processed transcript
+          setInputText((prev) => {
+            const newText = prev + processedText;
+            console.log("[v0] Updated input text:", newText);
+            return newText;
+          });
+
+          // Start translation
+          setTimeout(async () => {
+            if (streamingMode) {
+              await startStreamingTranslation();
+            } else {
+              await translateText();
+            }
+          }, 500);
+        }
       }
     },
     onInterimResult: async (interimTranscript: string) => {
@@ -167,6 +189,44 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     },
     onError: (error: string) => setSpeechError(error),
     onStart: () => setSpeechError(null),
+    onAutoStop: () => {
+      console.log(
+        "[v0] Auto-stopped due to silence - processing final transcript:",
+        transcript
+      );
+      // Process any remaining transcript when auto-stopped
+      if (transcript.trim()) {
+        if (voiceInteractionMode) {
+          // Voice interaction mode: translate to Hindi and speak
+          setTimeout(async () => {
+            let processedText = transcript;
+            if (grammarCorrectionEnabled) {
+              processedText = await correctGrammar(transcript);
+            }
+            await handleVoiceInteraction(processedText);
+          }, 500);
+        } else if (autoTranslate) {
+          // Normal auto-translate mode
+          setTimeout(async () => {
+            let processedText = transcript;
+            if (grammarCorrectionEnabled) {
+              processedText = await correctGrammar(transcript);
+            }
+            setInputText((prev) => {
+              const newText = prev + processedText;
+              console.log("[v0] Auto-stop updated input text:", newText);
+              return newText;
+            });
+
+            if (streamingMode) {
+              await startStreamingTranslation();
+            } else {
+              await translateText();
+            }
+          }, 500);
+        }
+      }
+    },
   });
 
   const {
@@ -483,6 +543,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
   const toggleRecording = () => {
     if (isListening) {
       stopListening();
+      setVoiceInteractionMode(false);
     } else {
       if (!isSpeechSupported) {
         setSpeechError("Speech recognition is not supported in this browser.");
@@ -491,13 +552,49 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
       setSpeechError(null);
       setTranslationError(null);
       resetTranscript();
-      lastTranscriptRef.current = ""; // Reset the last transcript ref
       setInputText("");
       // Clear previous translations when starting new recording
       setOutputLanguages((prev) =>
         prev.map((output) => ({ ...output, text: "" }))
       );
+      setVoiceInteractionMode(true);
       startListening();
+    }
+  };
+
+  const handleVoiceInteraction = async (recognizedText: string) => {
+    if (!recognizedText.trim()) return;
+
+    try {
+      // Translate to Hindi
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: recognizedText,
+          inputLang: "auto", // Auto-detect input language
+          outputLangs: ["hi"], // Always translate to Hindi
+          stream: false,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Translation failed");
+
+      if (data.success && data.translations) {
+        const hindiTranslation = data.translations.find(
+          (t: any) => t.language === "hi"
+        );
+        if (hindiTranslation?.text) {
+          // Speak the Hindi translation
+          setTimeout(() => {
+            playAudio(hindiTranslation.text, "hi");
+          }, 500);
+        }
+      }
+    } catch (error) {
+      console.error("Voice interaction translation error:", error);
+      setTranslationError("Failed to translate voice input");
     }
   };
 
@@ -517,7 +614,6 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
 
     setInputText("");
     resetTranscript();
-    lastTranscriptRef.current = ""; // Reset the last transcript ref
     setOutputLanguages((prev) =>
       prev.map((output) => ({ ...output, text: "" }))
     );
@@ -526,6 +622,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     setDetectedLanguage(null);
     setCurrentPlayingIndex(null);
     setIsTranslating(false);
+    setVoiceInteractionMode(false);
   };
 
   const addOutputLanguage = () => {
@@ -608,6 +705,62 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
         <>
           <div className="relative z-10 container mx-auto px-4 sm:px-6 max-w-7xl">
             <AppHeader />
+
+            {/* Floating Voice Button */}
+            <div className="fixed bottom-8 right-8 z-50">
+              <div className="relative">
+                {/* Voice interaction indicator */}
+                {voiceInteractionMode && (
+                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-green-500 rounded-full animate-ping"></div>
+                )}
+                <Button
+                  onClick={toggleRecording}
+                  variant={isListening ? "destructive" : "default"}
+                  size="lg"
+                  className={`h-16 w-16 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 ${
+                    isListening
+                      ? "bg-red-500 hover:bg-red-600 animate-pulse"
+                      : voiceInteractionMode
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "bg-primary hover:bg-primary/90"
+                  }`}
+                  disabled={!isSpeechSupported}
+                  title={
+                    voiceInteractionMode
+                      ? "Voice Interaction Mode - Click to stop"
+                      : isListening
+                      ? "Stop Recording"
+                      : "Start Voice Interaction"
+                  }
+                >
+                  {isSpeaking ? (
+                    <div className="flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                  ) : isListening ? (
+                    <MicOff className="h-6 w-6" />
+                  ) : (
+                    <Mic className="h-6 w-6" />
+                  )}
+                </Button>
+                {/* Status text */}
+                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-center whitespace-nowrap">
+                  {voiceInteractionMode ? (
+                    <span className="bg-green-500 text-white px-2 py-1 rounded">
+                      Voice Mode
+                    </span>
+                  ) : isListening ? (
+                    <span className="bg-red-500 text-white px-2 py-1 rounded animate-pulse">
+                      Listening...
+                    </span>
+                  ) : isSpeaking ? (
+                    <span className="bg-blue-500 text-white px-2 py-1 rounded">
+                      Speaking...
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4 animate-slide-up">
               <div className="flex self-end gap-2">

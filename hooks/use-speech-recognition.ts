@@ -6,11 +6,13 @@ interface SpeechRecognitionOptions {
   continuous?: boolean
   interimResults?: boolean
   language?: string
+  autoStopTimeout?: number // Auto-stop after silence (in milliseconds)
   onResult?: (transcript: string, isFinal: boolean) => void
   onInterimResult?: (transcript: string) => void
   onError?: (error: string) => void
   onStart?: () => void
   onEnd?: () => void
+  onAutoStop?: () => void // Called when auto-stopped due to silence
 }
 
 interface SpeechRecognitionHook {
@@ -56,7 +58,7 @@ declare global {
 }
 
 export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): SpeechRecognitionHook {
-  const { continuous = true, interimResults = true, language = "en-US", onResult, onInterimResult, onError, onStart, onEnd } = options
+  const { continuous = true, interimResults = true, language = "en-US", autoStopTimeout = 3000, onResult, onInterimResult, onError, onStart, onEnd, onAutoStop } = options
 
   const [isSupported, setIsSupported] = useState(false)
   const [isListening, setIsListening] = useState(false)
@@ -65,6 +67,8 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
   const [error, setError] = useState<string | null>(null)
 
   const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const autoStopTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastSpeechTimeRef = useRef<number>(0)
 
   // Check for browser support
   useEffect(() => {
@@ -91,36 +95,84 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
       console.log("[v0] Speech recognition started")
       setIsListening(true)
       setError(null)
+      lastSpeechTimeRef.current = Date.now()
       onStart?.()
     }
 
     recognition.onend = () => {
       console.log("[v0] Speech recognition ended")
       setIsListening(false)
+      // Clear auto-stop timeout when recognition ends
+      if (autoStopTimeoutRef.current) {
+        clearTimeout(autoStopTimeoutRef.current)
+        autoStopTimeoutRef.current = null
+      }
       onEnd?.()
     }
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
+      console.log("[v0] Raw speech recognition event:", {
+        resultIndex: event.resultIndex,
+        resultsLength: event.results.length,
+        results: Array.from(event.results).map((result, index) => ({
+          index,
+          isFinal: result.isFinal,
+          transcript: result[0]?.transcript || "",
+          confidence: result[0]?.confidence || 0
+        }))
+      })
+
       let finalTranscript = ""
       let interimTranscript = ""
 
-      // Only process the latest result to avoid duplication
-      const lastResult = event.results[event.results.length - 1]
-      if (lastResult.isFinal) {
-        finalTranscript = lastResult[0].transcript
-      } else {
-        interimTranscript = lastResult[0].transcript
+      // Process all results from the current resultIndex
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i]
+        if (!result || !result[0]) continue
+
+        const transcript = result[0].transcript
+
+        if (result.isFinal) {
+          finalTranscript += transcript
+          console.log(`[v0] Final result ${i}: "${transcript}"`)
+        } else {
+          interimTranscript = transcript
+          console.log(`[v0] Interim result ${i}: "${transcript}"`)
+        }
       }
 
-      console.log("[v0] Speech recognition result:", { finalTranscript, interimTranscript })
+      console.log("[v0] Processed speech recognition:", { finalTranscript, interimTranscript })
 
-      // Batch state updates to prevent multiple renders
-      if (finalTranscript) {
-        setTranscript(finalTranscript) // Set only the new transcript, not accumulated
+      // Update last speech time for auto-stop functionality
+      if (finalTranscript.trim() || interimTranscript.trim()) {
+        lastSpeechTimeRef.current = Date.now()
+
+        // Clear existing auto-stop timeout
+        if (autoStopTimeoutRef.current) {
+          clearTimeout(autoStopTimeoutRef.current)
+        }
+
+        // Set new auto-stop timeout
+        autoStopTimeoutRef.current = setTimeout(() => {
+          console.log("[v0] Auto-stopping due to silence")
+          if (recognitionRef.current && isListening) {
+            recognitionRef.current.stop()
+            onAutoStop?.()
+          }
+        }, autoStopTimeout)
+      }
+
+      // Update state with results
+      if (finalTranscript.trim()) {
+        setTranscript(prev => {
+          const newTranscript = prev + finalTranscript
+          console.log(`[v0] Updated transcript: "${newTranscript}"`)
+          return newTranscript
+        })
         onResult?.(finalTranscript, true)
       }
 
-      if (interimTranscript) {
+      if (interimTranscript.trim()) {
         setInterimTranscript(interimTranscript)
         onInterimResult?.(interimTranscript)
       }
@@ -133,7 +185,7 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
       setIsListening(false)
       onError?.(errorMessage)
     }
-  }, [continuous, interimResults, language, onResult, onInterimResult, onError, onStart, onEnd])
+  }, [continuous, interimResults, language, autoStopTimeout, onResult, onInterimResult, onError, onStart, onEnd, onAutoStop])
 
   const startListening = useCallback(() => {
     const recognition = recognitionRef.current
@@ -163,8 +215,12 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
   const resetTranscript = useCallback(() => {
     setTranscript("")
     setInterimTranscript("")
-    // Reset the last transcript ref to allow new transcripts
-    // This is handled by the component using the hook
+    lastSpeechTimeRef.current = 0
+    // Clear any pending auto-stop timeout
+    if (autoStopTimeoutRef.current) {
+      clearTimeout(autoStopTimeoutRef.current)
+      autoStopTimeoutRef.current = null
+    }
   }, [])
 
   return {
