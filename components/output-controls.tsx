@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useCallback, memo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,16 +18,11 @@ import {
   Plus,
   X,
   Play,
-  Square,
   Copy,
+  Volume2,
   BookOpen,
-  Download,
+  Square,
 } from "lucide-react";
-
-interface Language {
-  code: string;
-  name: string;
-}
 
 interface OutputLanguage {
   code: string;
@@ -34,50 +30,50 @@ interface OutputLanguage {
   text: string;
 }
 
-interface OutputSectionProps {
+interface OutputControlsProps {
   outputLanguages: OutputLanguage[];
-  languages: Language[];
-  isStreaming: boolean;
-  streamingResults: Record<string, string>;
-  isTTSSupported: boolean;
-  currentPlayingIndex: number | null;
-  isSpeaking: boolean;
   onAddOutputLanguage: () => void;
   onRemoveOutputLanguage: (index: number) => void;
   onUpdateOutputLanguage: (index: number, code: string) => void;
-  onPlayAudio: (text: string, languageCode: string, index: number) => void;
+  onPlayAudio: (text: string, languageCode: string, index?: number) => void;
   onCopyToClipboard: (text: string) => void;
   onDownloadAudio: (
     text: string,
     languageCode: string,
-    languageName: string
+    filename: string
   ) => void;
+  currentPlayingIndex: number | null;
+  isSpeaking: boolean;
+  isTTSSupported: boolean;
+  isStreaming: boolean;
+  streamingResults: Record<string, string>;
+  languages: Array<{ code: string; name: string }>;
 }
 
-export function OutputSection({
+const OutputControlsComponent = memo(function OutputControlsComponent({
   outputLanguages,
-  languages,
-  isStreaming,
-  streamingResults,
-  isTTSSupported,
-  currentPlayingIndex,
-  isSpeaking,
   onAddOutputLanguage,
   onRemoveOutputLanguage,
   onUpdateOutputLanguage,
   onPlayAudio,
   onCopyToClipboard,
   onDownloadAudio,
-}: OutputSectionProps) {
+  currentPlayingIndex,
+  isSpeaking,
+  isTTSSupported,
+  isStreaming,
+  streamingResults,
+  languages,
+}: OutputControlsProps) {
   return (
-    <Card className="p-6 lg:p-8 border-2 border-border bg-card border-primary/50 transition-all duration-300 rounded-2xl bg-gray-100">
+    <Card className="p-6 lg:p-8 shadow-lg border border-border/50 bg-card/95 backdrop-blur-sm hover:shadow-xl transition-all duration-300 rounded-2xl">
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center justify-center gap-3">
-            <div className="p-2 bg-secondary/10 rounded-lg">
-              <Languages className="h-5 w-5 text-black text-center" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 bg-accent/10 rounded-lg sm:rounded-xl">
+              <Languages className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
             </div>
-            <h2 className="text-2xl lg:text-2xl font-bold text-card-foreground">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-card-foreground">
               Output
             </h2>
           </div>
@@ -85,29 +81,28 @@ export function OutputSection({
             onClick={onAddOutputLanguage}
             variant="outline"
             size="sm"
-            className="self-end sm:self-auto bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02]"
+            className="self-start sm:self-auto bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02] text-sm"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Languageeed
+            Add Language
           </Button>
         </div>
 
-        <div className="flex gap-4 overflow-x-auto pb-4 px-2 sm:px-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent snap-x snap-mandatory">
+        <div className="space-y-3 sm:space-y-4 max-h-80 sm:max-h-96 lg:max-h-[32rem] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
           {outputLanguages.map((output, index) => (
             <Card
               key={index}
-              className="p-3 sm:p-4 lg:p-5 border border-primary/40 hover:bg-gray-100 transition-all duration-200 animate-slide-up rounded-xl flex-shrink-0 snap-start w-[94%] sm:w-[94%] md:w-[94%] lg:w-[94%] xl:w-[94%]"
+              className="p-3 sm:p-4 lg:p-6 bg-background/40 border border-border/30 hover:bg-background/60 transition-all duration-300 animate-slide-up rounded-lg sm:rounded-xl shadow-sm"
             >
-              <div className="space-y-4">
-                {/* Top Section */}
-                <div className="flex justify-between gap-2">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 xs:gap-3">
                   <Select
                     value={output.code}
                     onValueChange={(value) =>
                       onUpdateOutputLanguage(index, value)
                     }
                   >
-                    <SelectTrigger className="w-full sm:w-40">
+                    <SelectTrigger className="w-full xs:w-32 sm:w-36 bg-background/50 text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -121,7 +116,7 @@ export function OutputSection({
                     </SelectContent>
                   </Select>
 
-                  <div className="flex items-center rounded-lg justify-end gap-2 ">
+                  <div className="flex items-center gap-2 self-start xs:self-auto">
                     {isStreaming && streamingResults[output.code] && (
                       <Badge
                         variant="secondary"
@@ -137,19 +132,19 @@ export function OutputSection({
                       onClick={() => onRemoveOutputLanguage(index)}
                       variant="ghost"
                       size="sm"
-                      className="bg-red-100 hover:text-black transition-colors"
+                      className="hover:bg-destructive/10 hover:text-destructive transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
 
-                {/* Output Box */}
-                <div className="w-full min-h-36 sm:min-h-40 lg:min-h-48 p-3 sm:p-4 rounded-xl border-2 border-gray-300 text-sm sm:text-base overflow-hidden">
+                <div className="min-h-16 sm:min-h-20 lg:min-h-24 p-3 sm:p-4 bg-background/80 rounded-lg sm:rounded-xl border border-border/30 text-sm lg:text-base shadow-inner">
                   {output.text ? (
                     <div
-                      className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent"
+                      className="max-h-32 sm:max-h-40 lg:max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
                       style={{
+                        width: "100%",
                         wordBreak: "break-word",
                         overflowWrap: "break-word",
                       }}
@@ -157,7 +152,7 @@ export function OutputSection({
                       <ClickableText
                         text={output.text}
                         language={output.name}
-                        className="leading-relaxed break-words whitespace-pre-wrap block w-full"
+                        className="leading-relaxed whitespace-pre-wrap break-words block w-full"
                       />
                     </div>
                   ) : (
@@ -167,48 +162,53 @@ export function OutputSection({
                   )}
                 </div>
 
-                {/* Bottom Buttons */}
-                <div className="flex flex-wrap sm:flex-nowrap gap-2">
+                <div className="flex flex-col xs:flex-row gap-2">
                   <Button
                     onClick={() => onPlayAudio(output.text, output.code, index)}
                     variant="outline"
                     size="sm"
                     disabled={!output.text || !isTTSSupported}
-                    className="flex-1 bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02] py-2 rounded-xl"
+                    className="flex-1 xs:flex-none bg-background/60 hover:bg-background transition-all duration-300 hover:scale-[1.02] py-2 rounded-lg shadow-sm text-xs sm:text-sm"
                   >
                     {currentPlayingIndex === index && isSpeaking ? (
                       <>
-                        <Square className="h-4 w-4 mr-2" /> Stop
+                        <Square className="h-4 w-4 mr-2" />
+                        Stop
                       </>
                     ) : (
                       <>
-                        <Play className="h-4 w-4 mr-2" /> Play
+                        <Play className="h-4 w-4 mr-2" />
+                        Play
                       </>
                     )}
                   </Button>
-
                   <Button
                     onClick={() => onCopyToClipboard(output.text)}
                     variant="outline"
                     size="sm"
                     disabled={!output.text}
-                    className="flex-1 bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02] py-2 rounded-xl"
+                    className="flex-1 xs:flex-none bg-background/60 hover:bg-background transition-all duration-300 hover:scale-[1.02] py-2 rounded-lg shadow-sm text-xs sm:text-sm"
                   >
-                    <Copy className="h-4 w-4 mr-2" /> Copy
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy
                   </Button>
-
                   <Button
                     onClick={() =>
-                      onDownloadAudio(output.text, output.code, output.name)
+                      onDownloadAudio(
+                        output.text,
+                        output.code,
+                        `translation-${output.name}-${Date.now()}.wav`
+                      )
                     }
                     variant="outline"
                     size="sm"
                     disabled={!output.text || !isTTSSupported}
-                    className="flex-1 bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02] py-2 rounded-xl"
+                    className="flex-1 xs:flex-none bg-background/60 hover:bg-background transition-all duration-300 hover:scale-[1.02] py-2 rounded-lg shadow-sm text-xs sm:text-sm"
+                    title="Download audio as file"
                   >
-                    <Download className="h-4 w-4 mr-2" /> Download
+                    <Volume2 className="h-4 w-4 mr-2" />
+                    Download
                   </Button>
-
                   <GrammarAnalysisDialog
                     text={output.text}
                     language={output.name}
@@ -217,9 +217,10 @@ export function OutputSection({
                       variant="outline"
                       size="sm"
                       disabled={!output.text}
-                      className="flex-1 bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02] py-2 rounded-xl"
+                      className="flex-1 xs:flex-none bg-background/60 hover:bg-background transition-all duration-300 hover:scale-[1.02] py-2 rounded-lg shadow-sm text-xs sm:text-sm"
                     >
-                      <BookOpen className="h-4 w-4 mr-2" /> Grammar
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      Grammar
                     </Button>
                   </GrammarAnalysisDialog>
                 </div>
@@ -249,4 +250,6 @@ export function OutputSection({
       </div>
     </Card>
   );
-}
+});
+
+export const OutputControls = OutputControlsComponent;

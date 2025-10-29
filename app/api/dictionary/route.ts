@@ -49,11 +49,72 @@ No explanations, just JSON.`;
     console.log("[DICTIONARY API] Groq raw output:", content);
 
     try {
-      const translations = JSON.parse(content);
+      // Clean the content by removing markdown code blocks if present
+      let cleanContent = content;
+      if (content.startsWith('```json')) {
+        cleanContent = content.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      } else if (content.startsWith('```')) {
+        cleanContent = content.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
+
+      const translations = JSON.parse(cleanContent);
       console.log("[DICTIONARY API] Parsed translations successfully");
       return NextResponse.json({ translations });
     } catch (parseError) {
       console.warn("[DICTIONARY API] JSON parse error:", parseError);
+
+      // Try to extract JSON from the content if it's embedded
+      try {
+        const jsonMatch = content.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          const extractedJson = JSON.parse(jsonMatch[0]);
+          console.log("[DICTIONARY API] Extracted JSON successfully");
+          return NextResponse.json({ translations: extractedJson });
+        }
+      } catch (extractError) {
+        console.warn("[DICTIONARY API] Failed to extract JSON:", extractError);
+      }
+
+      // Try to manually construct translations from the raw content
+      try {
+        console.log("[DICTIONARY API] Attempting manual parsing of raw content");
+        const lines = content.split('\n').filter(line => line.trim());
+
+        // Look for word-translation pairs in the content
+        const manualTranslations: Array<{word: string, translation: string}> = [];
+        const wordRegex = /"word"\s*:\s*"([^"]+)"/g;
+        const translationRegex = /"translation"\s*:\s*"([^"]+)"/g;
+
+        let wordMatch;
+        let translationMatch;
+        const words: string[] = [];
+        const translations: string[] = [];
+
+        while ((wordMatch = wordRegex.exec(content)) !== null) {
+          words.push(wordMatch[1]);
+        }
+
+        while ((translationMatch = translationRegex.exec(content)) !== null) {
+          translations.push(translationMatch[1]);
+        }
+
+        // Pair words with translations
+        const maxLength = Math.min(words.length, translations.length);
+        for (let i = 0; i < maxLength; i++) {
+          manualTranslations.push({
+            word: words[i],
+            translation: translations[i]
+          });
+        }
+
+        if (manualTranslations.length > 0) {
+          console.log("[DICTIONARY API] Manual parsing successful");
+          return NextResponse.json({ translations: manualTranslations });
+        }
+      } catch (manualError) {
+        console.warn("[DICTIONARY API] Manual parsing failed:", manualError);
+      }
+
       return NextResponse.json({
         translations: [{ error: "Failed to parse response", raw: content }],
       });

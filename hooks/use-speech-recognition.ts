@@ -7,6 +7,7 @@ interface SpeechRecognitionOptions {
   interimResults?: boolean
   language?: string
   onResult?: (transcript: string, isFinal: boolean) => void
+  onInterimResult?: (transcript: string) => void
   onError?: (error: string) => void
   onStart?: () => void
   onEnd?: () => void
@@ -55,7 +56,7 @@ declare global {
 }
 
 export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): SpeechRecognitionHook {
-  const { continuous = true, interimResults = true, language = "en-US", onResult, onError, onStart, onEnd } = options
+  const { continuous = true, interimResults = true, language = "en-US", onResult, onInterimResult, onError, onStart, onEnd } = options
 
   const [isSupported, setIsSupported] = useState(false)
   const [isListening, setIsListening] = useState(false)
@@ -121,6 +122,7 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
 
       if (interimTranscript) {
         setInterimTranscript(interimTranscript)
+        onInterimResult?.(interimTranscript)
       }
     }
 
@@ -131,7 +133,7 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
       setIsListening(false)
       onError?.(errorMessage)
     }
-  }, [continuous, interimResults, language, onResult, onError, onStart, onEnd])
+  }, [continuous, interimResults, language, onResult, onInterimResult, onError, onStart, onEnd])
 
   const startListening = useCallback(() => {
     const recognition = recognitionRef.current

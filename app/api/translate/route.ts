@@ -48,91 +48,107 @@ async function translateWithGemini(
   sourceLang: string,
   targetLang: string,
 ): Promise<{ translatedText: string; detectedLanguage?: string }> {
-  const API_KEY = "AIzaSyCH11Alz5Zq7vqna7bC4-Up81JVmQx6zBI"
-  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+  const API_KEYS = [
+    "AIzaSyCH11Alz5Zq7vqna7bC4-Up81JVmQx6zBI",
+    "AIzaSyB5EUAxzTUoSoNumTKpt27F1DA4U05OPIk"
+  ]
 
-  // Create language names for better translation context
-  const languageNames: Record<string, string> = {
-    en: "English",
-    es: "Spanish",
-    fr: "French",
-    de: "German",
-    it: "Italian",
-    pt: "Portuguese",
-    ru: "Russian",
-    ja: "Japanese",
-    ko: "Korean",
-    "zh-cn": "Chinese",
-    ar: "Arabic",
-    // Indian languages
-    hi: "Hindi",
-    bn: "Bengali",
-    ta: "Tamil",
-    te: "Telugu",
-    mr: "Marathi",
-    gu: "Gujarati",
-    kn: "Kannada",
-    ml: "Malayalam",
-    pa: "Punjabi",
-    ur: "Urdu",
-    or: "Odia",
-    as: "Assamese",
-    ne: "Nepali",
-    si: "Sinhala",
+  let lastError: Error | null = null
+
+  // Try each API key until one works
+  for (const API_KEY of API_KEYS) {
+    try {
+      const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+
+      // Create language names for better translation context
+      const languageNames: Record<string, string> = {
+        en: "English",
+        es: "Spanish",
+        fr: "French",
+        de: "German",
+        it: "Italian",
+        pt: "Portuguese",
+        ru: "Russian",
+        ja: "Japanese",
+        ko: "Korean",
+        "zh-cn": "Chinese",
+        ar: "Arabic",
+        // Indian languages
+        hi: "Hindi",
+        bn: "Bengali",
+        ta: "Tamil",
+        te: "Telugu",
+        mr: "Marathi",
+        gu: "Gujarati",
+        kn: "Kannada",
+        ml: "Malayalam",
+        pa: "Punjabi",
+        ur: "Urdu",
+        or: "Odia",
+        as: "Assamese",
+        ne: "Nepali",
+        si: "Sinhala",
+      }
+
+      const targetLanguageName = languageNames[targetLang] || targetLang
+      const sourceLanguageName = sourceLang === "auto" ? "the detected language" : languageNames[sourceLang] || sourceLang
+
+      const prompt =
+        sourceLang === "auto"
+          ? `Translate the following text to ${targetLanguageName}. Only return the translated text, nothing else: "${text}"`
+          : `Translate the following text from ${sourceLanguageName} to ${targetLanguageName}. Only return the translated text, nothing else: "${text}"`
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-goog-api-key": API_KEY,
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt,
+                },
+              ],
+            },
+          ],
+        }),
+      })
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error("Rate limit exceeded. Please wait a moment and try again.")
+        }
+        throw new Error(`Gemini API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (data.error) {
+        throw new Error(data.error.message || "Translation failed")
+      }
+
+      const translatedText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
+
+      if (!translatedText) {
+        throw new Error("No translation received from Gemini")
+      }
+
+      return {
+        translatedText,
+        detectedLanguage: sourceLang === "auto" ? "auto-detected" : undefined,
+      }
+    } catch (error) {
+      console.error(`Gemini API error with key ${API_KEY.substring(0, 10)}...:`, error)
+      lastError = error as Error
+      // Continue to next API key
+    }
   }
 
-  const targetLanguageName = languageNames[targetLang] || targetLang
-  const sourceLanguageName = sourceLang === "auto" ? "the detected language" : languageNames[sourceLang] || sourceLang
-
-  const prompt =
-    sourceLang === "auto"
-      ? `Translate the following text to ${targetLanguageName}. Only return the translated text, nothing else: "${text}"`
-      : `Translate the following text from ${sourceLanguageName} to ${targetLanguageName}. Only return the translated text, nothing else: "${text}"`
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-goog-api-key": API_KEY,
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt,
-              },
-            ],
-          },
-        ],
-      }),
-    })
-
-    if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.status}`)
-    }
-
-    const data = await response.json()
-
-    if (data.error) {
-      throw new Error(data.error.message || "Translation failed")
-    }
-
-    const translatedText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
-
-    if (!translatedText) {
-      throw new Error("No translation received from Gemini")
-    }
-
-    return {
-      translatedText,
-      detectedLanguage: sourceLang === "auto" ? "auto-detected" : undefined,
-    }
-  } catch (error) {
-    console.error("Gemini API error:", error)
-    throw error
-  }
+  // If all API keys failed, throw the last error
+  throw lastError || new Error("All Gemini API keys failed")
 }
 
 export async function POST(request: NextRequest) {
@@ -159,6 +175,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Text too long. Maximum 5000 characters allowed." }, { status: 400 })
     }
 
+    // Add longer delay between requests to avoid rate limiting
+    await new Promise(resolve => setTimeout(resolve, 3000))
+
     const sourceLang = LANGUAGE_CODES[inputLang] || "auto"
     const results: TranslationResult[] = []
 
@@ -181,6 +200,11 @@ export async function POST(request: NextRequest) {
           detectedLanguage: translation.detectedLanguage,
         })
         console.log("[v0] Translation successful for:", targetLang)
+
+        // Add delay between multiple language translations to avoid rate limiting (increased delay)
+        if (outputLangs.length > 1) {
+          await new Promise(resolve => setTimeout(resolve, 1500))
+        }
       } catch (error) {
         console.error("[v0] Translation error for", targetLang, ":", error)
         results.push({

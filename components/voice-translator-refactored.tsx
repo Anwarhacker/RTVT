@@ -125,15 +125,44 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     continuous: true,
     interimResults: true,
     language: speechLanguageMap[inputLanguage] || "en-US",
-    onResult: (transcript: string, isFinal: boolean) => {
+    onResult: async (transcript: string, isFinal: boolean) => {
       if (isFinal && autoTranslate) {
-        setTimeout(() => {
+        // Process final transcript with grammar correction and translation
+        let processedText = transcript;
+        if (grammarCorrectionEnabled) {
+          processedText = await correctGrammar(transcript);
+        }
+
+        // Update input text with processed transcript
+        setInputText((prev) => prev + processedText);
+
+        // Start translation
+        setTimeout(async () => {
           if (streamingMode) {
-            startStreamingTranslation();
+            await startStreamingTranslation();
           } else {
-            translateText();
+            await translateText();
           }
-        }, 1000);
+        }, 500);
+      }
+    },
+    onInterimResult: async (interimTranscript: string) => {
+      if (autoTranslate && interimTranscript.trim()) {
+        // Real-time translation for interim results
+        let processedText = interimTranscript;
+        if (grammarCorrectionEnabled) {
+          processedText = await correctGrammar(interimTranscript);
+        }
+
+        // Update input text temporarily for real-time display
+        setInputText(processedText);
+
+        // Perform real-time translation
+        if (streamingMode) {
+          startStreamingTranslation();
+        } else {
+          translateTextRealtime(processedText);
+        }
       }
     },
     onError: (error: string) => setSpeechError(error),
@@ -194,22 +223,39 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (transcript && transcript !== lastTranscriptRef.current) {
-      lastTranscriptRef.current = transcript;
-      setInputText((prev) => prev + transcript);
-    }
-  }, [transcript]);
+  // Manual transcript handling removed - now handled in speech recognition callbacks
 
+  // Auto-translate typed text with debouncing
   useEffect(() => {
     if (interimTimeoutRef.current) clearTimeout(interimTimeoutRef.current);
-    interimTimeoutRef.current = setTimeout(() => {
-      console.log("[v0] Interim transcript:", interimTranscript);
-    }, 100);
+
+    // Only auto-translate if we have typed text and auto-translate is enabled
+    if (inputText.trim() && autoTranslate && !isListening) {
+      interimTimeoutRef.current = setTimeout(async () => {
+        console.log("[v0] Auto-translating typed text:", inputText);
+
+        // Process text with grammar correction if enabled
+        let processedText = inputText;
+        if (grammarCorrectionEnabled) {
+          processedText = await correctGrammar(inputText);
+          if (processedText !== inputText) {
+            setInputText(processedText);
+          }
+        }
+
+        // Perform translation
+        if (streamingMode) {
+          startStreamingTranslation();
+        } else {
+          translateTextRealtime(processedText);
+        }
+      }, 1000); // 1 second debounce for typed text
+    }
+
     return () => {
       if (interimTimeoutRef.current) clearTimeout(interimTimeoutRef.current);
     };
-  }, [interimTranscript]);
+  }, [inputText, autoTranslate, isListening, streamingMode, grammarCorrectionEnabled]);
 
   useEffect(() => {
     if (speechRecognitionError) setSpeechError(speechRecognitionError);
@@ -326,6 +372,62 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     );
   };
 
+  const translateTextRealtime = async (text: string) => {
+    if (!text.trim()) return;
+    setTranslationError(null);
+
+    try {
+      let textToTranslate = text;
+      if (grammarCorrectionEnabled) {
+        textToTranslate = await correctGrammar(text);
+      }
+
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: textToTranslate,
+          inputLang: inputLanguage,
+          outputLangs: outputLanguages.map((lang) => lang.code),
+          stream: false,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Translation failed");
+
+      if (data.success && data.translations) {
+        const updatedOutputs = outputLanguages.map((output) => {
+          const translation = data.translations.find(
+            (t: any) => t.language === output.code
+          );
+          return {
+            ...output,
+            text: translation?.text || "Translation not available",
+          };
+        });
+
+        setOutputLanguages(updatedOutputs);
+
+        if (inputLanguage === "auto" && data.detectedLanguage) {
+          setDetectedLanguage(data.detectedLanguage);
+        }
+
+        // Auto-play first translation if enabled
+        if (autoPlay && updatedOutputs.length > 0 && updatedOutputs[0].text) {
+          setTimeout(
+            () => playAudio(updatedOutputs[0].text, updatedOutputs[0].code, 0),
+            500
+          );
+        }
+      }
+    } catch (error) {
+      setTranslationError(
+        error instanceof Error ? error.message : "Translation failed"
+      );
+    }
+  };
+
   const playAudio = useCallback(
     (text: string, languageCode: string, index?: number) => {
       if (!text.trim() || !isTTSSupported) return;
@@ -391,6 +493,10 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
       resetTranscript();
       lastTranscriptRef.current = ""; // Reset the last transcript ref
       setInputText("");
+      // Clear previous translations when starting new recording
+      setOutputLanguages((prev) =>
+        prev.map((output) => ({ ...output, text: "" }))
+      );
       startListening();
     }
   };

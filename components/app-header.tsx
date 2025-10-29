@@ -69,7 +69,7 @@ export function AppHeader() {
         </div>
       </div>
 
-      <div className="overflow-x-auto flex gap-4  py-4 rounded-lg  px-4">
+      <div className="overflow-x-auto flex gap-4 justify-center items-center py-4 rounded-lg  px-4">
         <Button
           asChild
           variant="outline"

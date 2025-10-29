@@ -86,9 +86,10 @@ export function ClickableText({
         return (
           <span
             key={index}
-            className="cursor-pointer hover:bg-primary/10 hover:text-primary rounded px-1 py-0.5 transition-colors duration-200 inline-block "
+            className="cursor-pointer hover:bg-primary/10 hover:text-primary rounded px-1 py-0.5 transition-colors duration-200 inline"
             onClick={(e) => handleWordClick(part, e)}
             title="Click for word information"
+            style={{ display: "inline", wordBreak: "break-word" }}
           >
             {part}
           </span>
@@ -100,7 +101,8 @@ export function ClickableText({
   return (
     <div className="relative">
       <div
-        className={`select-text break-words overflow-wrap-anywhere whitespace-pre-wrap ${className}`}
+        className={`select-text break-words overflow-wrap-anywhere whitespace-pre-wrap leading-relaxed block w-full ${className}`}
+        style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
       >
         {renderClickableText()}
       </div>
