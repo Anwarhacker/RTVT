@@ -103,13 +103,12 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
       let finalTranscript = ""
       let interimTranscript = ""
 
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i]
-        if (result.isFinal) {
-          finalTranscript += result[0].transcript
-        } else {
-          interimTranscript += result[0].transcript
-        }
+      // Only process the latest result to avoid duplication
+      const lastResult = event.results[event.results.length - 1]
+      if (lastResult.isFinal) {
+        finalTranscript = lastResult[0].transcript
+      } else {
+        interimTranscript = lastResult[0].transcript
       }
 
       console.log("[v0] Speech recognition result:", { finalTranscript, interimTranscript })
@@ -119,7 +118,7 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
         setTranscript(finalTranscript) // Set only the new transcript, not accumulated
         onResult?.(finalTranscript, true)
       }
-      
+
       if (interimTranscript) {
         setInterimTranscript(interimTranscript)
       }
@@ -162,6 +161,8 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
   const resetTranscript = useCallback(() => {
     setTranscript("")
     setInterimTranscript("")
+    // Reset the last transcript ref to allow new transcripts
+    // This is handled by the component using the hook
   }, [])
 
   return {

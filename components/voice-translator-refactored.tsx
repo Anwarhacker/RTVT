@@ -197,7 +197,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
   useEffect(() => {
     if (transcript && transcript !== lastTranscriptRef.current) {
       lastTranscriptRef.current = transcript;
-      setInputText((prev) => prev + transcript + " ");
+      setInputText((prev) => prev + transcript);
     }
   }, [transcript]);
 
@@ -389,6 +389,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
       setSpeechError(null);
       setTranslationError(null);
       resetTranscript();
+      lastTranscriptRef.current = ""; // Reset the last transcript ref
       setInputText("");
       startListening();
     }
@@ -410,6 +411,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
 
     setInputText("");
     resetTranscript();
+    lastTranscriptRef.current = ""; // Reset the last transcript ref
     setOutputLanguages((prev) =>
       prev.map((output) => ({ ...output, text: "" }))
     );
