@@ -24,6 +24,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 interface Language {
   code: string;
@@ -141,7 +142,7 @@ export function InputSection({
             >
               {isCorrectingGrammar ? (
                 <>
-                  <div className="w-4 h-4 mr-2 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                  <LoadingSpinner size="sm" className="mr-2" />
                   Correcting Grammar...
                 </>
               ) : streamingMode ? (
@@ -158,7 +159,7 @@ export function InputSection({
                 )
               ) : isTranslating ? (
                 <>
-                  <div className="w-4 h-4 mr-2 border-2 border-primary-foreground bg-[#E5E7EB] border-t-transparent rounded-full animate-spin" />
+                  <LoadingSpinner size="sm" className="mr-2" />
                   Translating...
                 </>
               ) : (

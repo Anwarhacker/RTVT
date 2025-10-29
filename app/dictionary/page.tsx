@@ -103,8 +103,12 @@ export default function DictionaryPage() {
     <div className="min-h-screen gradient-bg p-3 sm:p-4">
       <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
         <div className="flex flex-col xs:flex-row items-start xs:items-center gap-3 xs:gap-4 mb-6 sm:mb-8">
-          <Link href="/">
-            <Button variant="outline" size="sm" className="rounded-lg shadow-sm">
+          <Link href="/translator">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-lg shadow-sm"
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Translator
             </Button>
@@ -114,7 +118,9 @@ export default function DictionaryPage() {
           <div className="p-2 sm:p-3 bg-primary/10 rounded-lg sm:rounded-xl">
             <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dictionary</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            Dictionary
+          </h1>
         </div>
 
         <Card className="p-4 sm:p-6 shadow-lg border border-border/50 bg-card/95 backdrop-blur-sm rounded-xl sm:rounded-2xl">
@@ -191,8 +197,12 @@ export default function DictionaryPage() {
                     </p>
                     {meaning.example && (
                       <div className="p-2 sm:p-3 bg-muted/30 rounded-lg border-l-4 border-primary">
-                        <p className="text-xs sm:text-sm text-muted-foreground italic">Example:</p>
-                        <p className="text-sm sm:text-base text-foreground">{meaning.example}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground italic">
+                          Example:
+                        </p>
+                        <p className="text-sm sm:text-base text-foreground">
+                          {meaning.example}
+                        </p>
                       </div>
                     )}
                   </div>

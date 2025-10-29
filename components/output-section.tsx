@@ -22,6 +22,7 @@ import {
   BookOpen,
   Download,
 } from "lucide-react";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 interface Language {
   code: string;
@@ -88,7 +89,7 @@ export function OutputSection({
             className="self-end sm:self-auto bg-background/50 hover:bg-background transition-all duration-200 hover:scale-[1.02]"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Languageeed
+            Add Language
           </Button>
         </div>
 
@@ -137,9 +138,9 @@ export function OutputSection({
                       onClick={() => onRemoveOutputLanguage(index)}
                       variant="ghost"
                       size="sm"
-                      className="bg-red-100 hover:text-black transition-colors"
+                      className="border-2 bolder-blue-500 hover:text-white transition-colors"
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-4 w-4 " />
                     </Button>
                   </div>
                 </div>
@@ -178,7 +179,8 @@ export function OutputSection({
                   >
                     {currentPlayingIndex === index && isSpeaking ? (
                       <>
-                        <Square className="h-4 w-4 mr-2" /> Stop
+                        <LoadingSpinner size="sm" className="mr-2" />
+                        Playing...
                       </>
                     ) : (
                       <>

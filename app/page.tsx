@@ -1,11 +1,18 @@
 "use client";
 
-import { VoiceTranslator } from "@/components/voice-translator-refactored";
+import { IntroSection } from "@/components/intro-section";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleContinue = () => {
+    router.push("/translator");
+  };
+
   return (
-    <main className="min-h-screen bg-white">
-      <VoiceTranslator />
-    </main>
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center">
+      <IntroSection onContinue={handleContinue} />
+    </div>
   );
 }

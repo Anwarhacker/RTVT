@@ -10,7 +10,7 @@ export default function ImageAnalysisPage() {
     <div className="min-h-screen gradient-bg p-3 sm:p-4">
       <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
         <div className="flex flex-col xs:flex-row items-start xs:items-center gap-3 xs:gap-4 mb-6 sm:mb-8">
-          <Link href="/">
+          <Link href="/translator">
             <Button
               variant="outline"
               size="sm"

@@ -1,9 +1,17 @@
-"use client"
+"use client";
 
-import { Mic, Languages, Volume2, Zap, BookOpen, Brain, ArrowRight } from "lucide-react"
+import {
+  Mic,
+  Languages,
+  Volume2,
+  Zap,
+  BookOpen,
+  Brain,
+  ArrowRight,
+} from "lucide-react";
 
 interface IntroSectionProps {
-  onContinue: () => void
+  onContinue: () => void;
 }
 
 export function IntroSection({ onContinue }: IntroSectionProps) {
@@ -17,21 +25,29 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
               AI-Powered Voice Translation
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground text-balance">
-              <span className="inline-block animate-fade-in" style={{animationDelay: '0.2s'}}>
+              <span
+                className="inline-block animate-fade-in"
+                style={{ animationDelay: "0.2s" }}
+              >
                 Real-Time
-              </span>
-              {' '}
-              <span className="inline-block animate-fade-in bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent" style={{animationDelay: '0.4s'}}>
+              </span>{" "}
+              <span
+                className="inline-block animate-fade-in bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"
+                style={{ animationDelay: "0.4s" }}
+              >
                 Voice
-              </span>
-              {' '}
-              <span className="inline-block animate-fade-in" style={{animationDelay: '0.6s'}}>
+              </span>{" "}
+              <span
+                className="inline-block animate-fade-in"
+                style={{ animationDelay: "0.6s" }}
+              >
                 Translator
               </span>
             </h1>
             <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto text-pretty px-4">
-              Break language barriers instantly with our advanced AI translator featuring speech recognition,
-              grammar correction, and natural voice synthesis.
+              Break language barriers instantly with our advanced AI translator
+              featuring speech recognition, grammar correction, and natural
+              voice synthesis.
             </p>
           </div>
 
@@ -40,9 +56,12 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                 <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">Voice Recognition</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                Voice Recognition
+              </h3>
               <p className="text-muted-foreground text-sm">
-                Real-time speech-to-text conversion with high accuracy across multiple languages
+                Real-time speech-to-text conversion with high accuracy across
+                multiple languages
               </p>
             </div>
 
@@ -50,9 +69,12 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                 <Languages className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">Multi-Language Support</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                Multi-Language Support
+              </h3>
               <p className="text-muted-foreground text-sm">
-                Support for 25+ languages including major Indian languages like Hindi, Tamil, Bengali
+                Support for 25+ languages including major Indian languages like
+                Hindi, Tamil, Bengali
               </p>
             </div>
 
@@ -60,9 +82,12 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                 <Volume2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">Natural Voice Synthesis</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                Natural Voice Synthesis
+              </h3>
               <p className="text-muted-foreground text-sm">
-                High-quality text-to-speech with adjustable speed and natural pronunciation
+                High-quality text-to-speech with adjustable speed and natural
+                pronunciation
               </p>
             </div>
 
@@ -70,9 +95,12 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                 <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">Real-Time Streaming</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                Real-Time Streaming
+              </h3>
               <p className="text-muted-foreground text-sm">
-                See translations appear word-by-word as you speak for instant communication
+                See translations appear word-by-word as you speak for instant
+                communication
               </p>
             </div>
 
@@ -80,9 +108,12 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                 <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">Grammar Correction</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                Grammar Correction
+              </h3>
               <p className="text-muted-foreground text-sm">
-                AI-powered grammar and spelling correction before translation for better accuracy
+                AI-powered grammar and spelling correction before translation
+                for better accuracy
               </p>
             </div>
 
@@ -90,9 +121,12 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                 <Brain className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">Smart Analysis</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                Smart Analysis
+              </h3>
               <p className="text-muted-foreground text-sm">
-                Grammatical analysis with parts of speech tagging and contextual word definitions
+                Grammatical analysis with parts of speech tagging and contextual
+                word definitions
               </p>
             </div>
           </div>
@@ -105,29 +139,41 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-primary-foreground rounded-full"></div>
-                  <span className="text-primary-foreground text-sm sm:text-base">Auto-translate as you speak</span>
+                  <span className="text-primary-foreground text-sm sm:text-base">
+                    Auto-translate as you speak
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-primary-foreground rounded-full"></div>
-                  <span className="text-primary-foreground text-sm sm:text-base">Translation history with export</span>
+                  <span className="text-primary-foreground text-sm sm:text-base">
+                    Translation history with export
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-primary-foreground rounded-full"></div>
-                  <span className="text-primary-foreground text-sm sm:text-base">Customizable voice settings</span>
+                  <span className="text-primary-foreground text-sm sm:text-base">
+                    Customizable voice settings
+                  </span>
                 </div>
               </div>
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-primary-foreground rounded-full"></div>
-                  <span className="text-primary-foreground text-sm sm:text-base">Clickable word definitions</span>
+                  <span className="text-primary-foreground text-sm sm:text-base">
+                    Clickable word definitions
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-primary-foreground rounded-full"></div>
-                  <span className="text-primary-foreground text-sm sm:text-base">Multiple output languages</span>
+                  <span className="text-primary-foreground text-sm sm:text-base">
+                    Multiple output languages
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-primary-foreground rounded-full"></div>
-                  <span className="text-primary-foreground text-sm sm:text-base">Responsive design for all devices</span>
+                  <span className="text-primary-foreground text-sm sm:text-base">
+                    Responsive design for all devices
+                  </span>
                 </div>
               </div>
             </div>
@@ -138,13 +184,15 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
               onClick={onContinue}
               className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg sm:rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base"
             >
-              Get Started
+              Start Translating
               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-3">Start translating in seconds • No signup required</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-3">
+              Start translating in seconds • No signup required
+            </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
