@@ -80,6 +80,36 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     { code: "si", name: "Sinhala" },
   ];
 
+  // BCP 47 language codes for speech recognition
+  const speechLanguageMap: Record<string, string> = {
+    auto: "en-US",
+    en: "en-US",
+    hi: "hi-IN",
+    es: "es-ES",
+    fr: "fr-FR",
+    de: "de-DE",
+    it: "it-IT",
+    pt: "pt-BR",
+    ru: "ru-RU",
+    ja: "ja-JP",
+    ko: "ko-KR",
+    zh: "zh-CN",
+    ar: "ar-SA",
+    bn: "bn-IN",
+    ta: "ta-IN",
+    te: "te-IN",
+    mr: "mr-IN",
+    gu: "gu-IN",
+    kn: "kn-IN",
+    ml: "ml-IN",
+    pa: "pa-IN",
+    ur: "ur-IN",
+    or: "or-IN",
+    as: "as-IN",
+    ne: "ne-NP",
+    si: "si-LK",
+  };
+
   const { addEntry } = useTranslationHistory();
 
   const {
@@ -94,10 +124,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
   } = useSpeechRecognition({
     continuous: true,
     interimResults: true,
-    language:
-      inputLanguage === "auto"
-        ? "en-US"
-        : `${inputLanguage}-${inputLanguage.toUpperCase()}`,
+    language: speechLanguageMap[inputLanguage] || "en-US",
     onResult: (transcript: string, isFinal: boolean) => {
       if (isFinal && autoTranslate) {
         setTimeout(() => {
