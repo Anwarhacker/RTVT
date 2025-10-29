@@ -197,14 +197,21 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
       // Process any remaining transcript when auto-stopped
       if (transcript.trim()) {
         if (voiceInteractionMode) {
-          // Voice interaction mode: translate to Hindi and speak
-          setTimeout(async () => {
-            let processedText = transcript;
-            if (grammarCorrectionEnabled) {
-              processedText = await correctGrammar(transcript);
-            }
-            await handleVoiceInteraction(processedText);
-          }, 500);
+          // Voice interaction mode: translate to Hindi and speak (only once)
+          let processedText = transcript;
+          // Use a flag to prevent duplicate processing
+          if (
+            !lastTranscriptRef.current ||
+            lastTranscriptRef.current !== processedText
+          ) {
+            lastTranscriptRef.current = processedText;
+            setTimeout(async () => {
+              if (grammarCorrectionEnabled) {
+                processedText = await correctGrammar(transcript);
+              }
+              await handleVoiceInteraction(processedText);
+            }, 200);
+          }
         } else if (autoTranslate) {
           // Normal auto-translate mode
           setTimeout(async () => {
@@ -491,7 +498,14 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
   const playAudio = useCallback(
     (text: string, languageCode: string, index?: number) => {
       if (!text.trim() || !isTTSSupported) return;
-      if (isSpeaking) {
+
+      // Prevent duplicate speech in voice interaction mode
+      if (voiceInteractionMode && isSpeaking) {
+        console.log("[VOICE] Already speaking, skipping duplicate speech");
+        return;
+      }
+
+      if (isSpeaking && !voiceInteractionMode) {
         stopSpeaking();
         if (currentPlayingIndex === index) {
           setCurrentPlayingIndex(null);
@@ -510,6 +524,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
       stopSpeaking,
       setRate,
       speak,
+      voiceInteractionMode,
     ]
   );
 
@@ -565,13 +580,24 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
   const handleVoiceInteraction = async (recognizedText: string) => {
     if (!recognizedText.trim()) return;
 
+    console.log("[VOICE] Processing voice interaction:", recognizedText);
+
     try {
-      // Translate to Hindi
+      // Step 1: Grammar correction
+      let processedText = recognizedText;
+      if (grammarCorrectionEnabled) {
+        console.log("[VOICE] Applying grammar correction...");
+        processedText = await correctGrammar(recognizedText);
+        console.log("[VOICE] Grammar corrected:", processedText);
+      }
+
+      // Step 2: Translate to Hindi
+      console.log("[VOICE] Translating to Hindi...");
       const response = await fetch("/api/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          text: recognizedText,
+          text: processedText,
           inputLang: "auto", // Auto-detect input language
           outputLangs: ["hi"], // Always translate to Hindi
           stream: false,
@@ -586,10 +612,15 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
           (t: any) => t.language === "hi"
         );
         if (hindiTranslation?.text) {
-          // Speak the Hindi translation
+          console.log("[VOICE] Hindi translation:", hindiTranslation.text);
+
+          // Step 3: Speak the Hindi translation (only once)
           setTimeout(() => {
-            playAudio(hindiTranslation.text, "hi");
-          }, 500);
+            if (voiceInteractionMode && !isSpeaking) {
+              console.log("[VOICE] Speaking Hindi response...");
+              playAudio(hindiTranslation.text, "hi");
+            }
+          }, 300); // Reduced delay for faster response
         }
       }
     } catch (error) {
