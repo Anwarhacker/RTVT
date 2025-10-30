@@ -50,6 +50,8 @@ interface TranslationContextType {
   setGrammarCorrectionEnabled: (enabled: boolean) => void;
   speechSpeed: number;
   setSpeechSpeed: (speed: number) => void;
+  speechOutputLanguage: string;
+  setSpeechOutputLanguage: (language: string) => void;
 
   // Hooks
   isSpeechSupported: boolean;
@@ -139,6 +141,7 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
   const [grammarCorrectionEnabled, setGrammarCorrectionEnabled] =
     useState(true);
   const [speechSpeed, setSpeechSpeed] = useState(0.8);
+  const [speechOutputLanguage, setSpeechOutputLanguage] = useState("en");
 
   // Constants
   const languages = [
@@ -214,24 +217,97 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
   } = useSpeechRecognition({
     continuous: true,
     interimResults: true,
-    language: speechLanguageMap[inputLanguage] || "en-US",
+    language: "hi-IN", // Default to Hindi for speech recognition
     onResult: async (transcript: string, isFinal: boolean) => {
       console.log("[v0] Speech recognition result:", {
         transcript,
         isFinal,
         autoTranslate,
+        speechOutputLanguage,
       });
       if (isFinal && autoTranslate) {
         let processedText = transcript;
         if (grammarCorrectionEnabled) {
           processedText = await correctGrammar(transcript);
         }
-        setInputText((prev) => prev + processedText);
+
+        // Set the recognized Hindi text as input
+        setInputText(processedText);
+
+        // Translate to all output languages including the selected speech output language
         setTimeout(async () => {
-          if (streamingMode) {
-            await startStreamingTranslation();
-          } else {
-            await translateText();
+          try {
+            const response = await fetch("/api/translate", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                text: processedText,
+                inputLang: "hi",
+                outputLangs: outputLanguages
+                  .map((lang) => lang.code)
+                  .concat(
+                    speechOutputLanguage !== "hi" ? [speechOutputLanguage] : []
+                  ),
+                stream: false,
+              }),
+            });
+
+            const data = await response.json();
+            if (data.success && data.translations) {
+              const updatedOutputs = outputLanguages.map((output) => {
+                const translation = data.translations.find(
+                  (t: any) => t.language === output.code
+                );
+                return {
+                  ...output,
+                  text: translation?.text || "Translation not available",
+                };
+              });
+
+              // Add the speech output language translation if different from existing outputs
+              if (
+                speechOutputLanguage !== "hi" &&
+                !outputLanguages.some(
+                  (lang) => lang.code === speechOutputLanguage
+                )
+              ) {
+                const speechTranslation = data.translations.find(
+                  (t: any) => t.language === speechOutputLanguage
+                );
+                if (speechTranslation?.text) {
+                  const speechLang = languages.find(
+                    (l) => l.code === speechOutputLanguage
+                  );
+                  updatedOutputs.push({
+                    code: speechOutputLanguage,
+                    name: speechLang?.name || speechOutputLanguage,
+                    text: speechTranslation.text,
+                  });
+                }
+              }
+
+              setOutputLanguages(updatedOutputs);
+
+              if (
+                autoPlay &&
+                updatedOutputs.length > 0 &&
+                updatedOutputs[0].text
+              ) {
+                setTimeout(() => {
+                  playAudio(updatedOutputs[0].text, updatedOutputs[0].code, 0);
+                }, 500);
+              }
+            }
+          } catch (error) {
+            console.error("[v0] Speech translation error:", error);
+            // Fallback to normal translation
+            if (streamingMode) {
+              await startStreamingTranslation();
+            } else {
+              await translateText();
+            }
           }
         }, 500);
       }
@@ -910,6 +986,8 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
     setGrammarCorrectionEnabled,
     speechSpeed,
     setSpeechSpeed,
+    speechOutputLanguage,
+    setSpeechOutputLanguage,
 
     // Hooks
     isSpeechSupported,

@@ -49,6 +49,8 @@ async function translateWithGemini(
   targetLang: string,
 ): Promise<{ translatedText: string; detectedLanguage?: string }> {
   const API_KEYS = [
+    process.env.GEMINI_API_KEY || "AIzaSyCH11Alz5Zq7vqna7bC4-Up81JVmQx6zBI",
+    process.env.GEMINI_API_KEY_BACKUP || "AIzaSyBUbswYNJWJxwSoZh4VzI1x1l3Iz23iB68",
     "AIzaSyCH11Alz5Zq7vqna7bC4-Up81JVmQx6zBI",
     "AIzaSyB5EUAxzTUoSoNumTKpt27F1DA4U05OPIk"
   ]
@@ -176,7 +178,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add longer delay between requests to avoid rate limiting
-    await new Promise(resolve => setTimeout(resolve, 3000))
+    await new Promise(resolve => setTimeout(resolve, 5000))
 
     const sourceLang = LANGUAGE_CODES[inputLang] || "auto"
     const results: TranslationResult[] = []
@@ -203,7 +205,7 @@ export async function POST(request: NextRequest) {
 
         // Add delay between multiple language translations to avoid rate limiting (increased delay)
         if (outputLangs.length > 1) {
-          await new Promise(resolve => setTimeout(resolve, 1500))
+          await new Promise(resolve => setTimeout(resolve, 3000))
         }
       } catch (error) {
         console.error("[v0] Translation error for", targetLang, ":", error)

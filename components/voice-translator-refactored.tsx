@@ -610,15 +610,17 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
         console.log("[VOICE] Grammar corrected:", processedText);
       }
 
-      // Step 2: Translate to Hindi
-      console.log("[VOICE] Translating to Hindi...");
+      // Step 2: Set the recognized text as input
+      setInputText(processedText);
+
+      // Step 3: Translate to all output languages including Hindi
       const response = await fetch("/api/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           text: processedText,
           inputLang: "auto", // Auto-detect input language
-          outputLangs: ["hi"], // Always translate to Hindi
+          outputLangs: outputLanguages.map((lang) => lang.code).concat("hi"), // Include Hindi in outputs
           stream: false,
         }),
       });
@@ -627,13 +629,38 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
       if (!response.ok) throw new Error(data.error || "Translation failed");
 
       if (data.success && data.translations) {
+        const updatedOutputs = outputLanguages.map((output) => {
+          const translation = data.translations.find(
+            (t: any) => t.language === output.code
+          );
+          return {
+            ...output,
+            text: translation?.text || "Translation not available",
+          };
+        });
+
+        // Add Hindi translation if not already in outputs
+        if (!outputLanguages.some((lang) => lang.code === "hi")) {
+          const hindiTranslation = data.translations.find(
+            (t: any) => t.language === "hi"
+          );
+          if (hindiTranslation?.text) {
+            updatedOutputs.push({
+              code: "hi",
+              name: "Hindi",
+              text: hindiTranslation.text,
+            });
+          }
+        }
+
+        setOutputLanguages(updatedOutputs);
+
+        // Step 4: Speak the Hindi translation
         const hindiTranslation = data.translations.find(
           (t: any) => t.language === "hi"
         );
         if (hindiTranslation?.text) {
           console.log("[VOICE] Hindi translation:", hindiTranslation.text);
-
-          // Step 3: Speak the Hindi translation (only once)
           setTimeout(() => {
             if (voiceInteractionMode && !isSpeaking) {
               console.log("[VOICE] Speaking Hindi response...");
@@ -772,7 +799,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                   size="lg"
                   className={`h-16 w-16 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 ${
                     isListening
-                      ? "bg-red-500  hover:bg-red-600 animate-pulse"
+                      ? " hover:bg-red-600 animate-pulse"
                       : voiceInteractionMode
                       ? "bg-green-500  hover:bg-green-600"
                       : "bg-primary hover:bg-primary/90"

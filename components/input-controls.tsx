@@ -16,6 +16,7 @@ import {
   Square,
   Globe,
   RotateCcw,
+  Languages,
 } from "lucide-react";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import { LoadingSpinner } from "@/components/loading-spinner";
@@ -47,6 +48,9 @@ interface InputControlsProps {
   isListening: boolean;
   interimTranscript: string;
   isStreaming: boolean;
+  speechOutputLanguage: string;
+  setSpeechOutputLanguage: (language: string) => void;
+  languages: Array<{ code: string; name: string }>;
 }
 
 const InputControlsComponent = memo(function InputControlsComponent({
@@ -76,6 +80,9 @@ const InputControlsComponent = memo(function InputControlsComponent({
   isListening,
   interimTranscript,
   isStreaming,
+  speechOutputLanguage,
+  setSpeechOutputLanguage,
+  languages,
 }: InputControlsProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -218,6 +225,35 @@ const InputControlsComponent = memo(function InputControlsComponent({
                 </span>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div className="space-y-3 p-3 sm:p-5 bg-muted/20 rounded-lg sm:rounded-xl border border-border/30">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+            <Languages className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            Speech Translation Language
+          </h3>
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="speech-output-language"
+              className="text-sm text-muted-foreground"
+            >
+              Translate speech to:
+            </label>
+            <select
+              id="speech-output-language"
+              value={speechOutputLanguage}
+              onChange={(e) => setSpeechOutputLanguage(e.target.value)}
+              className="px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            >
+              {languages
+                .filter((lang) => lang.code !== "auto")
+                .map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </option>
+                ))}
+            </select>
           </div>
         </div>
 

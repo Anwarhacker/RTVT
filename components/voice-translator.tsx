@@ -64,6 +64,8 @@ const VoiceTranslatorContent = memo(function VoiceTranslatorContent() {
     resetAll,
     swapLanguages,
     languages,
+    speechOutputLanguage,
+    setSpeechOutputLanguage,
   } = useTranslation();
 
   useEffect(() => {
@@ -158,6 +160,9 @@ const VoiceTranslatorContent = memo(function VoiceTranslatorContent() {
                 isListening={isListening}
                 interimTranscript={interimTranscript}
                 isStreaming={isStreaming}
+                speechOutputLanguage={speechOutputLanguage}
+                setSpeechOutputLanguage={setSpeechOutputLanguage}
+                languages={languages}
               />
 
               <OutputControls
