@@ -787,7 +787,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
             <AppHeader />
 
             {/* Floating Voice Button */}
-            <div className="fixed bottom-8 right-8 z-50">
+            <div className="fixed bottom-10 right-8 z-50">
               <div className="relative">
                 {/* Voice interaction indicator */}
                 {voiceInteractionMode && (
@@ -826,8 +826,8 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                 {/* Status text */}
                 <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-center whitespace-nowrap">
                   {voiceInteractionMode ? (
-                    <span className="bg-green-500 text-white px-2 py-1 rounded">
-                      Voice Mode
+                    <span className="bg-green-500 text-white px-2 py-1 rounded animate-pulse">
+                      translating...
                     </span>
                   ) : isListening ? (
                     <span className="bg-red-500 text-white px-2 py-1 rounded animate-pulse">

@@ -310,7 +310,7 @@ export function InputSection({
               Listening for speech... (Auto-stop after 3s silence)
             </div>
             {interimTranscript && isListening && (
-              <div className="text-sm text-muted-foreground italic p-3 bg-background/50 rounded border border-border/50">
+              <div className="text-sm text-muted-foreground italic p-3 bg-background/50 rounded border border-border/50 animate-pulse">
                 "{interimTranscript}"
               </div>
             )}

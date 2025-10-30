@@ -90,6 +90,23 @@ const VoiceTranslatorContent = memo(function VoiceTranslatorContent() {
 
       {!showIntro && (
         <>
+          {(isListening ||
+            isCorrectingGrammar ||
+            isTranslating ||
+            isStreaming) && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+                <p className="text-lg font-semibold">
+                  {isListening
+                    ? "Listening..."
+                    : isCorrectingGrammar
+                    ? "Correcting Grammar..."
+                    : "Translating..."}
+                </p>
+              </div>
+            </div>
+          )}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>
             <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
