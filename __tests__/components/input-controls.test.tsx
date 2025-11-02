@@ -44,6 +44,10 @@ describe("InputControls", () => {
     isListening: false,
     interimTranscript: "",
     isStreaming: false,
+    languages: [
+      { code: "en", name: "English" },
+      { code: "es", name: "Spanish" },
+    ],
   };
 
   beforeEach(() => {

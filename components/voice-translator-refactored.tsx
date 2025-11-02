@@ -19,6 +19,7 @@ import { useStreamingTranslation } from "@/hooks/use-streaming-translation";
 import { useTranslationHistory } from "@/hooks/use-translation-history";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Mic, MicOff, Settings } from "lucide-react";
+import { swapLanguages } from "@/utils/language";
 
 interface OutputLanguage {
   code: string;
@@ -547,31 +548,19 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     ]
   );
 
-  const swapLanguages = useCallback(() => {
-    if (inputLanguage === "auto" || outputLanguages.length === 0) return;
-    const firstOutputLang = outputLanguages[0];
-    const newInputLang = firstOutputLang.code;
-    const newOutputLang = inputLanguage;
 
-    setInputLanguage(newInputLang);
-    setOutputLanguages((prev) => [
-      {
-        ...prev[0],
-        code: newOutputLang,
-        name:
-          languages.find((l) => l.code === newOutputLang)?.name ||
-          newOutputLang,
-      },
-      ...prev.slice(1),
-    ]);
-
-    const inputTextContent = inputText;
-    const outputTextContent = firstOutputLang.text;
-    setInputText(outputTextContent);
-    setOutputLanguages((prev) => [
-      { ...prev[0], text: inputTextContent },
-      ...prev.slice(1),
-    ]);
+  const handleSwapLanguages = useCallback(() => {
+    const result = swapLanguages(
+      inputLanguage,
+      outputLanguages,
+      inputText,
+      languages
+    );
+    if (result) {
+      setInputLanguage(result.newInputLang);
+      setInputText(result.newInputText);
+      setOutputLanguages(result.newOutputLanguages);
+    }
   }, [inputLanguage, outputLanguages, inputText, languages]);
 
   const toggleRecording = () => {
@@ -872,7 +861,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                 languages={languages}
                 onInputLanguageChange={setInputLanguage}
                 onOutputLanguageChange={updateOutputLanguage}
-                onSwapLanguages={swapLanguages}
+                onSwapLanguages={handleSwapLanguages}
               />
             </div>
 

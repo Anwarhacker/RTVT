@@ -131,7 +131,7 @@ describe('Validation Utils', () => {
       const file = new File([''], 'test.txt', { type: 'text/plain' });
       const result = validateFile(file);
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('File must be an image');
+      expect(result.errors).toContain('File must be an image (JPEG, PNG, GIF, or WebP)');
     });
   });
 
