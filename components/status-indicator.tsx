@@ -8,6 +8,7 @@ interface StatusIndicatorProps {
   isSpeaking: boolean;
   isStreaming: boolean;
   isCorrectingGrammar: boolean;
+  isProcessingVoice: boolean;
 }
 
 export function StatusIndicator({
@@ -15,8 +16,15 @@ export function StatusIndicator({
   isSpeaking,
   isStreaming,
   isCorrectingGrammar,
+  isProcessingVoice,
 }: StatusIndicatorProps) {
-  if (!isTranslating && !isSpeaking && !isStreaming && !isCorrectingGrammar) {
+  if (
+    !isTranslating &&
+    !isSpeaking &&
+    !isStreaming &&
+    !isCorrectingGrammar &&
+    !isProcessingVoice
+  ) {
     return null;
   }
 
@@ -29,7 +37,9 @@ export function StatusIndicator({
         <div className="flex items-center gap-3">
           <LoadingSpinner size="sm" />
           <span className="text-sm font-medium">
-            {isCorrectingGrammar
+            {isProcessingVoice
+              ? "Processing voice..."
+              : isCorrectingGrammar
               ? "Correcting grammar..."
               : isStreaming
               ? "Streaming translation..."
