@@ -133,6 +133,8 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
 
   const { addEntry } = useTranslationHistory();
 
+  const [isProcessingVoice, setIsProcessingVoice] = useState(false);
+
   const {
     isSupported: isSpeechSupported,
     isListening,
@@ -142,6 +144,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     stopListening,
     resetTranscript,
     error: speechRecognitionError,
+    audioBlob,
   } = useSpeechRecognition({
     continuous: true,
     interimResults: true,
@@ -309,6 +312,21 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (audioBlob) {
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audio.play();
+      audio.onended = () => {
+        setIsProcessingVoice(false);
+      };
+
+      return () => {
+        URL.revokeObjectURL(audioUrl);
+      };
+    }
+  }, [audioBlob]);
 
   // Manual transcript handling removed - now handled in speech recognition callbacks
 
@@ -566,6 +584,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
   const toggleRecording = () => {
     if (isListening) {
       stopListening();
+      setIsProcessingVoice(true);
       setVoiceInteractionMode(false);
     } else {
       if (!isSpeechSupported) {
@@ -923,6 +942,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
               isSpeaking={isSpeaking}
               isStreaming={isStreaming}
               isCorrectingGrammar={isCorrectingGrammar}
+              isProcessingVoice={isProcessingVoice}
             />
 
             <QuickTips />
