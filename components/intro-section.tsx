@@ -11,7 +11,6 @@ import {
   ImageIcon,
   History,
 } from "lucide-react";
-import { InstallButton } from "./install-button";
 
 interface IntroSectionProps {
   onContinue: () => void;
@@ -222,16 +221,13 @@ export function IntroSection({ onContinue }: IntroSectionProps) {
           </div>
 
           <div className="pt-6 sm:pt-8">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-              <button
-                onClick={onContinue}
-                className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg sm:rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base"
-              >
-                Start Translating
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-              <InstallButton />
-            </div>
+            <button
+              onClick={onContinue}
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg sm:rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base"
+            >
+              Start Translating
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
             <p className="text-xs sm:text-sm text-muted-foreground mt-3">
               Start translating in seconds • No signup required
             </p>

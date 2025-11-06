@@ -10,7 +10,11 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-export function InstallButton() {
+interface InstallButtonProps {
+  variant?: "icon" | "full";
+}
+
+export function InstallButton({ variant = "full" }: InstallButtonProps) {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
@@ -158,7 +162,18 @@ export function InstallButton() {
 
   // Always show button, but behavior depends on installability
   if (isInstalled) {
-    return (
+    return variant === "full" ? (
+      <Button
+        variant="outline"
+        size="lg"
+        className="relative min-w-[160px]"
+        title="App Already Installed"
+        disabled
+      >
+        <Download className="h-5 w-5 text-green-500 mr-2" />
+        Installed
+      </Button>
+    ) : (
       <Button
         variant="outline"
         size="icon"
@@ -172,7 +187,17 @@ export function InstallButton() {
   }
 
   if (deferredPrompt) {
-    return (
+    return variant === "full" ? (
+      <Button
+        onClick={handleInstallClick}
+        size="lg"
+        className="relative min-w-[160px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200"
+        title="Install App"
+      >
+        <Download className="h-5 w-5 mr-2" />
+        Install RTVT
+      </Button>
+    ) : (
       <Button
         onClick={handleInstallClick}
         variant="outline"
@@ -199,7 +224,18 @@ export function InstallButton() {
     );
   };
 
-  return (
+  return variant === "full" ? (
+    <Button
+      variant="outline"
+      size="lg"
+      className="relative cursor-pointer hover:bg-accent min-w-[160px]"
+      title="Click for install information"
+      onClick={handleNotInstallableClick}
+    >
+      <Download className="h-5 w-5 mr-2" />
+      Install RTVT
+    </Button>
+  ) : (
     <Button
       variant="outline"
       size="icon"

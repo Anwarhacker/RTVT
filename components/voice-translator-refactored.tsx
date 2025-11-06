@@ -852,7 +852,6 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                     Settings
                   </Button>
                 </SettingsDialog>
-                <InstallButton />
               </div>
 
               <LanguageSwapSection
@@ -927,6 +926,24 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
             />
 
             <QuickTips />
+            
+            {/* Install RTVT Section */}
+            <div className="mt-12 mb-8 animate-slide-up">
+              <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-2xl p-6 sm:p-8 border-2 border-primary/20 shadow-lg">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-center sm:text-left">
+                    <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
+                      Install RTVT
+                    </h3>
+                    <p className="text-sm sm:text-base text-muted-foreground">
+                      Install our app for quick access, offline support, and better experience
+                    </p>
+                  </div>
+                  <InstallButton />
+                </div>
+              </div>
+            </div>
+
             <AppFooter />
           </div>
       </>
