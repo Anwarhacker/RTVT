@@ -377,7 +377,10 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
       );
     },
     onComplete: (results: Record<string, string>) => {
-      saveToHistory(results);
+      console.log("[v0] Streaming onComplete called with results:", results);
+      if (saveToHistoryRef.current) {
+        saveToHistoryRef.current(results);
+      }
       if (autoPlay && outputLanguages.length > 0) {
         const firstLang = outputLanguages[0];
         const firstResult = results[firstLang.code];
@@ -394,6 +397,7 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
   });
 
   const lastTranscriptRef = useRef("");
+  const saveToHistoryRef = useRef<((results?: Record<string, string>) => void) | null>(null);
 
   // Effects
   useEffect(() => {
@@ -651,6 +655,44 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
     [inputLanguage, outputLanguages, grammarCorrectionEnabled, autoPlay]
   );
 
+  const saveToHistory = useCallback(
+    (results?: Record<string, string>) => {
+      console.log("[v0] Saving to history:", { inputText, results, outputLanguages });
+      if (!inputText.trim()) {
+        console.log("[v0] No input text, skipping history save");
+        return;
+      }
+
+      const translations = outputLanguages
+        .map((output) => ({
+          language: output.code,
+          languageName: output.name,
+          text: results ? results[output.code] || output.text : output.text,
+        }))
+        .filter((t) => t.text && t.text.trim());
+
+      console.log("[v0] Translations to save:", translations);
+
+      if (translations.length > 0) {
+        addEntry({
+          inputText: inputText.trim(),
+          inputLanguage,
+          detectedLanguage: detectedLanguage || undefined,
+          translations,
+        });
+        console.log("[v0] History entry added successfully");
+      } else {
+        console.log("[v0] No valid translations to save");
+      }
+    },
+    [inputText, outputLanguages, inputLanguage, detectedLanguage, addEntry]
+  );
+
+  // Update ref whenever saveToHistory changes
+  useEffect(() => {
+    saveToHistoryRef.current = saveToHistory;
+  }, [saveToHistory]);
+
   const translateText = useCallback(async () => {
     if (!inputText.trim()) {
       console.log("[v0] No input text for translation");
@@ -753,6 +795,7 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
     outputLanguages,
     grammarCorrectionEnabled,
     autoPlay,
+    saveToHistory,
   ]);
 
   const playAudio = useCallback(
@@ -822,29 +865,6 @@ export function TranslationProvider({ children }: TranslationProviderProps) {
     translateText,
   ]);
 
-  const saveToHistory = useCallback(
-    (results?: Record<string, string>) => {
-      if (!inputText.trim()) return;
-
-      const translations = outputLanguages
-        .map((output) => ({
-          language: output.code,
-          languageName: output.name,
-          text: results ? results[output.code] || output.text : output.text,
-        }))
-        .filter((t) => t.text && t.text.trim());
-
-      if (translations.length > 0) {
-        addEntry({
-          inputText: inputText.trim(),
-          inputLanguage,
-          detectedLanguage: detectedLanguage || undefined,
-          translations,
-        });
-      }
-    },
-    [inputText, outputLanguages, inputLanguage, detectedLanguage, addEntry]
-  );
 
   const resetAll = useCallback(() => {
     console.log("[v0] Resetting all state");

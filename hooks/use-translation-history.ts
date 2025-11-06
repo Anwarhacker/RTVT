@@ -33,8 +33,10 @@ export function useTranslationHistory(): TranslationHistoryHook {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
+      console.log("[History Hook] Loading history from localStorage, found:", !!stored)
       if (stored) {
         const parsed = JSON.parse(stored)
+        console.log("[History Hook] Parsed history entries:", parsed.length)
         setHistory(Array.isArray(parsed) ? parsed : [])
       }
     } catch (error) {
@@ -45,21 +47,26 @@ export function useTranslationHistory(): TranslationHistoryHook {
   // Save history to localStorage whenever it changes
   useEffect(() => {
     try {
+      console.log("[History Hook] Saving history to localStorage, entries:", history.length)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(history))
+      console.log("[History Hook] Successfully saved to localStorage")
     } catch (error) {
       console.error("Failed to save translation history:", error)
     }
   }, [history])
 
   const addEntry = useCallback((entry: Omit<TranslationHistoryEntry, "id" | "timestamp">) => {
+    console.log("[History Hook] addEntry called with:", entry)
     const newEntry: TranslationHistoryEntry = {
       ...entry,
       id: crypto.randomUUID(),
       timestamp: Date.now(),
     }
+    console.log("[History Hook] Created new entry:", newEntry)
 
     setHistory((prev) => {
       const updated = [newEntry, ...prev]
+      console.log("[History Hook] Updated history, total entries:", updated.length)
       // Keep only the most recent entries
       return updated.slice(0, MAX_HISTORY_ENTRIES)
     })

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, memo } from "react";
-import dynamic from "next/dynamic";
 import { IntroSection } from "@/components/intro-section";
 import { AppHeader } from "@/components/app-header";
 import { AppFooter } from "@/components/app-footer";
@@ -13,6 +12,7 @@ import { OutputSection } from "@/components/output-section";
 import { ErrorAlerts } from "@/components/error-alerts";
 import { SettingsDialog } from "@/components/settings-dialog";
 import { HistoryDialog } from "@/components/history-dialog";
+import { InstallButton } from "@/components/install-button";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import { useTextToSpeech } from "@/hooks/use-text-to-speech";
 import { useStreamingTranslation } from "@/hooks/use-streaming-translation";
@@ -28,7 +28,6 @@ interface OutputLanguage {
 }
 
 const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
-  const [showIntro, setShowIntro] = useState(false);
   const [inputText, setInputText] = useState("");
   const [inputLanguage, setInputLanguage] = useState("auto");
   const [outputLanguages, setOutputLanguages] = useState<OutputLanguage[]>([
@@ -144,7 +143,6 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
     stopListening,
     resetTranscript,
     error: speechRecognitionError,
-    audioBlob,
   } = useSpeechRecognition({
     continuous: true,
     interimResults: true,
@@ -312,21 +310,6 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    if (audioBlob) {
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      audio.play();
-      audio.onended = () => {
-        setIsProcessingVoice(false);
-      };
-
-      return () => {
-        URL.revokeObjectURL(audioUrl);
-      };
-    }
-  }, [audioBlob]);
 
   // Manual transcript handling removed - now handled in speech recognition callbacks
 
@@ -787,10 +770,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-100 to-gray-200 relative overflow-hidden">
-      {showIntro && <IntroSection onContinue={() => setShowIntro(false)} />}
-
-      {!showIntro && (
-        <>
+      <>
           <div className="relative z-10 container mx-auto px-4 sm:px-6 max-w-7xl">
             <AppHeader />
 
@@ -851,7 +831,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4 animate-slide-up">
-              <div className="flex self-end gap-2">
+              <div className="flex self-end gap-2 flex-wrap">
                 <HistoryDialog>
                   <Button
                     variant="outline"
@@ -872,6 +852,7 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
                     Settings
                   </Button>
                 </SettingsDialog>
+                <InstallButton />
               </div>
 
               <LanguageSwapSection
@@ -948,20 +929,11 @@ const VoiceTranslatorComponent = memo(function VoiceTranslatorComponent() {
             <QuickTips />
             <AppFooter />
           </div>
-        </>
-      )}
+      </>
     </div>
   );
 });
 
-export const VoiceTranslator = dynamic(
-  () => Promise.resolve(VoiceTranslatorComponent),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-black"></div>
-      </div>
-    ),
-  }
-);
+// Export with client-side only rendering
+VoiceTranslatorComponent.displayName = "VoiceTranslator";
+export const VoiceTranslator = VoiceTranslatorComponent;

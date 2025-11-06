@@ -11,6 +11,7 @@ import {
 import { Button } from "./ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { InstallButton } from "./install-button";
 
 export function AppHeader() {
   return (
@@ -93,6 +94,8 @@ export function AppHeader() {
             Image Analysis
           </Link>
         </Button>
+
+        <InstallButton />
       </div>
     </div>
   );
