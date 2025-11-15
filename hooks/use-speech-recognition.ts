@@ -65,9 +65,6 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
   const [transcript, setTranscript] = useState("")
   const [interimTranscript, setInterimTranscript] = useState("")
   const [error, setError] = useState<string | null>(null)
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null)
   const autoStopTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -190,7 +187,7 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
     }
   }, [continuous, interimResults, language, autoStopTimeout, onResult, onInterimResult, onError, onStart, onEnd, onAutoStop])
 
-  const startListening = useCallback(async () => {
+  const startListening = useCallback(() => {
     const recognition = recognitionRef.current
     if (!recognition || isListening) {
       console.log("[v0] Cannot start listening:", { hasRecognition: !!recognition, isListening })
@@ -199,17 +196,6 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
 
     try {
       console.log("[v0] Starting speech recognition")
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
-      mediaRecorderRef.current.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-        setAudioBlob(audioBlob);
-        audioChunksRef.current = [];
-      };
-      mediaRecorderRef.current.start();
       recognition.start()
     } catch (error) {
       const errorMessage = "Failed to start speech recognition"
@@ -223,9 +209,6 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
     const recognition = recognitionRef.current
     if (!recognition || !isListening) return
 
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-      mediaRecorderRef.current.stop();
-    }
     recognition.stop()
   }, [isListening])
 
@@ -249,6 +232,5 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
     stopListening,
     resetTranscript,
     error,
-    audioBlob
   }
 }
